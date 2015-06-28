@@ -1,0 +1,19 @@
+title:  KnpUGuard: Symfony Authentication with a Smile
+summary: |
+    Symfony's authentication is definitely powerful, but if you
+    need to do something complex, you might pull your hair out.
+
+    No more! In this tutorial, we'll see how KnpUGuard authentication
+    works and use it to build a system with both a login form *and*
+    the ability to read API tokens.
+
+    Doing this will be pretty easy. But more importantly, you'll have
+    all the hook points you'll ever need to meet whatever crazy authentication
+    system you have.
+
+illustration: guard-auth.png
+hasVideoDownload: 0
+
+chapters:
+    installation:
+        is_finished: false
