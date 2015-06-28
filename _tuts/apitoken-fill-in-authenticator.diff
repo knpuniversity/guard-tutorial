@@ -1,0 +1,80 @@
+diff --git a/src/AppBundle/Security/ApiTokenAuthenticator.php b/src/AppBundle/Security/ApiTokenAuthenticator.php
+index cd075a8..ed8d6f2 100644
+--- a/src/AppBundle/Security/ApiTokenAuthenticator.php
++++ b/src/AppBundle/Security/ApiTokenAuthenticator.php
+@@ -2,7 +2,9 @@
+ 
+ namespace AppBundle\Security;
+ 
++use Doctrine\ORM\EntityManager;
+ use KnpU\Guard\AbstractGuardAuthenticator;
++use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+@@ -12,38 +14,56 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
+ 
+ class ApiTokenAuthenticator extends AbstractGuardAuthenticator
+ {
++    private $em;
++
++    public function __construct(EntityManager $em)
++    {
++        $this->em = $em;
++    }
++
+     public function getCredentials(Request $request)
+     {
+-        // TODO: Implement getCredentials() method.
++        return $request->headers->get('X-TOKEN');
+     }
+ 
+     public function getUser($credentials, UserProviderInterface $userProvider)
+     {
+-        // TODO: Implement getUser() method.
++        return $this->em->getRepository('AppBundle:User')
++            ->findOneBy(array('apiToken' => $credentials));
+     }
+ 
+     public function checkCredentials($credentials, UserInterface $user)
+     {
+-        // TODO: Implement checkCredentials() method.
++        // no need to check
++        return;
+     }
+ 
+     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+     {
+-        // TODO: Implement onAuthenticationFailure() method.
++        return new JsonResponse(
++            // you could translate the message
++            array('message' => $exception->getMessageKey()),
++            401
++        );
+     }
+ 
+     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+     {
+-        // TODO: Implement onAuthenticationSuccess() method.
++        // do nothing - let the request just continue!
++        return;
+     }
+ 
+     public function supportsRememberMe()
+     {
+-        // TODO: Implement supportsRememberMe() method.
++        return false;
+     }
+ 
+     public function start(Request $request, AuthenticationException $authException = null)
+     {
+-        // TODO: Implement start() method.
++        return new JsonResponse(
++            // you could translate the message
++            array('message' => 'Authentication required'),
++            401
++        );
+     }
+-}
+\ No newline at end of file
++}

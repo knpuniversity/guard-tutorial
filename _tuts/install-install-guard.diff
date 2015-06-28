@@ -1,5 +1,5 @@
 diff --git a/app/AppKernel.php b/app/AppKernel.php
-index 1e8325c..2cabd38 100644
+index c7a93d4..c08a1be 100644
 --- a/app/AppKernel.php
 +++ b/app/AppKernel.php
 @@ -17,6 +17,7 @@ class AppKernel extends Kernel
@@ -11,33 +11,33 @@ index 1e8325c..2cabd38 100644
  
          if (in_array($this->getEnvironment(), array('dev', 'test'))) {
 diff --git a/composer.json b/composer.json
-index e6a30e4..588e84e 100644
+index 307097e..5b55974 100644
 --- a/composer.json
 +++ b/composer.json
-@@ -19,7 +19,8 @@
-         "symfony/monolog-bundle": "~2.4",
+@@ -20,7 +20,8 @@
          "sensio/distribution-bundle": "~4.0",
          "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
--        "incenteev/composer-parameter-handler": "~2.0"
-+        "incenteev/composer-parameter-handler": "~2.0",
+         "incenteev/composer-parameter-handler": "~2.0",
+-        "doctrine/doctrine-fixtures-bundle": "^2.2"
++        "doctrine/doctrine-fixtures-bundle": "^2.2",
 +        "knpuniversity/guard-bundle": "~0.1@dev"
      },
      "require-dev": {
          "sensio/generator-bundle": "~2.3"
 diff --git a/composer.lock b/composer.lock
-index d694269..9deebda 100644
+index 4a86afd..e03a92b 100644
 --- a/composer.lock
 +++ b/composer.lock
 @@ -4,7 +4,7 @@
          "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
          "This file is @generated automatically"
      ],
--    "hash": "da966dd2ac924fbd6a3e9c5d87fa2144",
+-    "hash": "5991e5c98f267438ffe8a5cc493e2c5d",
 +    "hash": "04d99f606e1b06159f398d4f2bcdb534",
      "packages": [
          {
              "name": "doctrine/annotations",
-@@ -804,6 +804,92 @@
+@@ -921,6 +921,92 @@
              "time": "2014-01-12 16:20:24"
          },
          {
@@ -130,7 +130,7 @@ index d694269..9deebda 100644
              "name": "kriswallsmith/assetic",
              "version": "v1.2.1",
              "source": {
-@@ -1614,7 +1700,9 @@
+@@ -1731,7 +1817,9 @@
      ],
      "aliases": [],
      "minimum-stability": "stable",

@@ -44,7 +44,32 @@
             "id": "formlogin-security-yml-setup",
             "name": "FormLogin: security.yml setup",
             "description": null
+        },
+        {
+            "id": "apitoken-creating-empty-apitokenauthenticator",
+            "name": "ApiToken: Creating empty ApiTokenAuthenticator",
+            "description": null
+        },
+        {
+            "id": "apitoken-custom-user-provider",
+            "name": "ApiToken: Custom user provider",
+            "description": null
+        },
+        {
+            "id": "apitoken-fill-in-authenticator",
+            "name": "ApiToken: Fill in authenticator",
+            "description": null
+        },
+        {
+            "id": "apitoken-configuration",
+            "name": "ApiToken: Configuration",
+            "description": null
+        },
+        {
+            "id": "apitoken-test-it",
+            "name": "ApiToken: Test it",
+            "description": null
         }
     ],
-    "sha": "3b40bd2f6e5f77314ea6265d25c3150dffd22ebc"
+    "sha": "522097a89d12ebf3112d46015b890bb824265061"
 }
