@@ -1,0 +1,68 @@
+diff --git a/app/Resources/views/security/login.html.twig b/app/Resources/views/security/login.html.twig
+new file mode 100644
+index 0000000..0d5b3a4
+--- /dev/null
++++ b/app/Resources/views/security/login.html.twig
+@@ -0,0 +1,24 @@
++{% extends 'base.html.twig' %}
++
++{% block body %}
++    <form action="{{ path('security_login_check') }}" method="post">
++        {% if error %}
++            <div class="alert alert-danger">
++                {{ error.messageKey|trans(error.messageData) }}
++            </div>
++        {% endif %}
++
++        <div>
++            <label for="username">Username</label>
++            <input type="text" id="username" name="_username" value="{{ last_username }}" />
++        </div>
++
++        <div>
++            <label for="password">Password:</label>
++            <input type="password" id="password" name="_password" />
++        </div>
++
++        <br/>
++        <button type="submit">Login</button>
++    </form>
++{% endblock %}
+diff --git a/src/AppBundle/Controller/SecurityController.php b/src/AppBundle/Controller/SecurityController.php
+new file mode 100644
+index 0000000..a72d572
+--- /dev/null
++++ b/src/AppBundle/Controller/SecurityController.php
+@@ -0,0 +1,32 @@
++<?php
++
++namespace AppBundle\Controller;
++
++use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
++use Symfony\Bundle\FrameworkBundle\Controller\Controller;
++
++class SecurityController extends Controller
++{
++    /**
++     * @Route("/login", name="security_login")
++     */
++    public function loginAction()
++    {
++        $helper = $this->get('security.authentication_utils');
++
++        return $this->render('security/login.html.twig', array(
++            // last username entered by the user (if any)
++            'last_username' => $helper->getLastUsername(),
++            // last authentication error (if any)
++            'error' => $helper->getLastAuthenticationError(),
++        ));
++    }
++
++    /**
++     * @Route("/login_check", name="security_login_check")
++     */
++    public function loginCheckAction()
++    {
++        // will never be executed
++    }
++}

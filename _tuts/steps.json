@@ -1,0 +1,50 @@
+{
+    "steps": [
+        {
+            "id": "start",
+            "name": "start",
+            "description": null
+        },
+        {
+            "id": "userprovider-basic-security-yml-config",
+            "name": "UserProvider: basic security.yml config",
+            "description": null
+        },
+        {
+            "id": "login-creating-login-form",
+            "name": "Login: creating login form",
+            "description": null
+        },
+        {
+            "id": "login-adding-login-processing-controller",
+            "name": "Login: adding login processing controller",
+            "description": null
+        },
+        {
+            "id": "install-install-guard",
+            "name": "Install: Install guard",
+            "description": null
+        },
+        {
+            "id": "formlogin-create-empty-authenticator",
+            "name": "FormLogin: Create empty authenticator",
+            "description": null
+        },
+        {
+            "id": "formlogin-filling-in-the-basics",
+            "name": "FormLogin: Filling in the basics",
+            "description": null
+        },
+        {
+            "id": "formlogin-register-as-a-service",
+            "name": "FormLogin: register as a service",
+            "description": null
+        },
+        {
+            "id": "formlogin-security-yml-setup",
+            "name": "FormLogin: security.yml setup",
+            "description": null
+        }
+    ],
+    "sha": "3b40bd2f6e5f77314ea6265d25c3150dffd22ebc"
+}

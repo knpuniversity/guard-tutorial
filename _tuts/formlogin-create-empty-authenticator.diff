@@ -1,0 +1,36 @@
+diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
+new file mode 100644
+index 0000000..686783b
+--- /dev/null
++++ b/src/AppBundle/Security/FormLoginAuthenticator.php
+@@ -0,0 +1,30 @@
++<?php
++
++namespace AppBundle\Security;
++
++use KnpU\Guard\Authenticator\AbstractFormLoginAuthenticator;
++use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\Security\Core\User\UserInterface;
++
++class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
++{
++    protected function getLoginUrl()
++    {
++        // TODO: Implement getLoginUrl() method.
++    }
++
++    protected function getDefaultSuccessRedirectUrl()
++    {
++        // TODO: Implement getDefaultSuccessRedirectUrl() method.
++    }
++
++    public function getCredentials(Request $request)
++    {
++        // TODO: Implement getCredentials() method.
++    }
++
++    public function checkCredentials($credentials, UserInterface $user)
++    {
++        // TODO: Implement checkCredentials() method.
++    }
++}
