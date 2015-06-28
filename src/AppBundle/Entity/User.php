@@ -46,6 +46,11 @@ class User implements UserInterface
      */
     private $roles = array();
 
+    /**
+     * @ORM\Column(type="string", unique=true)
+     */
+    private $apiToken;
+
     public function getId()
     {
         return $this->id;
@@ -117,5 +122,13 @@ class User implements UserInterface
     {
         // if you had a plainPassword property, you'd nullify it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @param string $apiToken
+     */
+    public function setApiToken($apiToken)
+    {
+        $this->apiToken = $apiToken;
     }
 }
