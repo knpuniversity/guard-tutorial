@@ -69,7 +69,17 @@
             "id": "apitoken-test-it",
             "name": "ApiToken: Test it",
             "description": null
+        },
+        {
+            "id": "facebook-install-libs",
+            "name": "Facebook: Install libs",
+            "description": null
+        },
+        {
+            "id": "facebook-full-implementation",
+            "name": "Facebook: Full implementation",
+            "description": null
         }
     ],
-    "sha": "97201f56da0b0360e609289d306ae8faa0e81334"
+    "sha": "7d2464466e2d69a823d6a3a9e44acef4c9f5dfb6"
 }
