@@ -25,7 +25,7 @@ index 307097e..5b55974 100644
      "require-dev": {
          "sensio/generator-bundle": "~2.3"
 diff --git a/composer.lock b/composer.lock
-index 4a86afd..e03a92b 100644
+index 4a86afd..c1e1b23 100644
 --- a/composer.lock
 +++ b/composer.lock
 @@ -4,7 +4,7 @@
@@ -33,7 +33,7 @@ index 4a86afd..e03a92b 100644
          "This file is @generated automatically"
      ],
 -    "hash": "5991e5c98f267438ffe8a5cc493e2c5d",
-+    "hash": "04d99f606e1b06159f398d4f2bcdb534",
++    "hash": "d5eb0eec3f337a27109be53d16780572",
      "packages": [
          {
              "name": "doctrine/annotations",
@@ -42,16 +42,16 @@ index 4a86afd..e03a92b 100644
          },
          {
 +            "name": "knpuniversity/guard",
-+            "version": "0.2",
++            "version": "0.3",
 +            "source": {
 +                "type": "git",
 +                "url": "https://github.com/knpuniversity/KnpUGuard.git",
-+                "reference": "2511e3175b33cc91c01d405394048fa8c17ebad3"
++                "reference": "b1252b1051918970bb2fd3644164cd7b858f8338"
 +            },
 +            "dist": {
 +                "type": "zip",
-+                "url": "https://api.github.com/repos/knpuniversity/KnpUGuard/zipball/2511e3175b33cc91c01d405394048fa8c17ebad3",
-+                "reference": "2511e3175b33cc91c01d405394048fa8c17ebad3",
++                "url": "https://api.github.com/repos/knpuniversity/KnpUGuard/zipball/b1252b1051918970bb2fd3644164cd7b858f8338",
++                "reference": "b1252b1051918970bb2fd3644164cd7b858f8338",
 +                "shasum": ""
 +            },
 +            "require": {
@@ -81,7 +81,7 @@ index 4a86afd..e03a92b 100644
 +            "keywords": [
 +                "security"
 +            ],
-+            "time": "2015-06-28 19:51:55"
++            "time": "2015-07-07 20:16:35"
 +        },
 +        {
 +            "name": "knpuniversity/guard-bundle",
