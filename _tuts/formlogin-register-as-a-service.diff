@@ -1,5 +1,5 @@
 diff --git a/app/config/services.yml b/app/config/services.yml
-index 5c76fc5..805c1c3 100644
+index 5c76fc5..6df21da 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
 @@ -4,6 +4,6 @@ parameters:
@@ -11,4 +11,4 @@ index 5c76fc5..805c1c3 100644
 -#        arguments: ["@another_service_name", "plain_value", "%parameter_name%"]
 +    app.form_login_authenticator:
 +        class: AppBundle\Security\FormLoginAuthenticator
-+        arguments: ["@router", "@security.user_password_encoder.generic"]
++        arguments: ["@service_container"]

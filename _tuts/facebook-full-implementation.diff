@@ -20,7 +20,7 @@ index 23ce35a..d802b03 100644
                  # by default, use the start() function from FormLoginAuthenticator
                  entry_point: app.form_login_authenticator
 diff --git a/app/config/services.yml b/app/config/services.yml
-index 9e45265..5447cd4 100644
+index 5dadd04..cd19b95 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
 @@ -11,3 +11,11 @@ services:

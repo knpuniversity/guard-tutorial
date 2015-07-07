@@ -1,31 +1,19 @@
 diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
-index c8954a9..8461468 100644
+index 41b43b6..15a66f6 100644
 --- a/src/AppBundle/Security/FormLoginAuthenticator.php
 +++ b/src/AppBundle/Security/FormLoginAuthenticator.php
-@@ -4,34 +4,64 @@ namespace AppBundle\Security;
- 
+@@ -5,6 +5,9 @@ namespace AppBundle\Security;
  use KnpU\Guard\Authenticator\AbstractFormLoginAuthenticator;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
  use Symfony\Component\HttpFoundation\Request;
--use Symfony\Component\Security\Core\Exception\AuthenticationException;
 +use Symfony\Component\Routing\RouterInterface;
-+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 +use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 +use Symfony\Component\Security\Core\Security;
  use Symfony\Component\Security\Core\User\UserInterface;
  use Symfony\Component\Security\Core\User\UserProviderInterface;
  
- class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
- {
-+    private $router;
-+
-+    private $encoder;
-+
-+    public function __construct(RouterInterface $router, UserPasswordEncoderInterface $encoder)
-+    {
-+        $this->router = $router;
-+        $this->encoder = $encoder;
-+    }
-+
+@@ -19,26 +22,46 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
+ 
      public function getCredentials(Request $request)
      {
 -        // TODO: Implement getCredentials() method.
@@ -55,7 +43,8 @@ index c8954a9..8461468 100644
      {
 -        // TODO: Implement checkCredentials() method.
 +        $plainPassword = $credentials['password'];
-+        if (!$this->encoder->isPasswordValid($user, $plainPassword)) {
++        $encoder = $this->container->get('security.password_encoder');
++        if (!$encoder->isPasswordValid($user, $plainPassword)) {
 +            // throw any AuthenticationException
 +            throw new BadCredentialsException();
 +        }
@@ -64,12 +53,14 @@ index c8954a9..8461468 100644
      protected function getLoginUrl()
      {
 -        // TODO: Implement getLoginUrl() method.
-+        return $this->router->generate('security_login');
++        return $this->container->get('router')
++            ->generate('security_login');
      }
  
      protected function getDefaultSuccessRedirectUrl()
      {
 -        // TODO: Implement getDefaultSuccessRedirectUrl() method.
-+        return $this->router->generate('homepage');
++        return $this->container->get('router')
++            ->generate('homepage');
      }
  }

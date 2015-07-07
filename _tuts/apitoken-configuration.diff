@@ -10,13 +10,13 @@ index aa38c3d..23ce35a 100644
 +                # by default, use the start() function from FormLoginAuthenticator
 +                entry_point: app.form_login_authenticator
 diff --git a/app/config/services.yml b/app/config/services.yml
-index 805c1c3..9e45265 100644
+index 6df21da..5dadd04 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
 @@ -7,3 +7,7 @@ services:
      app.form_login_authenticator:
          class: AppBundle\Security\FormLoginAuthenticator
-         arguments: ["@router", "@security.user_password_encoder.generic"]
+         arguments: ["@service_container"]
 +
 +    app.api_token_authenticator:
 +        class: AppBundle\Security\ApiTokenAuthenticator
