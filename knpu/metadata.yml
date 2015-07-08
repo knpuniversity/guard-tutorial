@@ -21,6 +21,8 @@ chapters:
         is_finished: false
     api-token:
         is_finished: false
+    silex:
+        is_finished: false
     login-form-customize-user:
         is_finished: false
     login-form-error-messages:
