@@ -17,3 +17,21 @@ hasVideoDownload: 0
 chapters:
     installation:
         is_finished: false
+    login-form:
+        is_finished: false
+    api-token:
+        is_finished: false
+    login-form-customize-user:
+        is_finished: false
+    login-form-error-messages:
+        is_finished: false
+    login-form-failure-handling:
+        is_finished: false
+    login-form-success-handling:
+        is_finished: false
+    login-form-csrf:
+        is_finished: false
+    multiple-authenticators:
+        is_finished: false
+    manually-authenticating:
+        is_finished: false
