@@ -261,10 +261,10 @@ index c1e1b23..662eaf1 100644
              "source": {
 diff --git a/testAuth.php b/testAuth.php
 new file mode 100644
-index 0000000..93fcaca
+index 0000000..1da31fa
 --- /dev/null
 +++ b/testAuth.php
-@@ -0,0 +1,15 @@
+@@ -0,0 +1,17 @@
 +<?php
 +
 +require __DIR__.'/vendor/autoload.php';
@@ -279,4 +279,6 @@ index 0000000..93fcaca
 +    ]
 +]);
 +
-+var_dump($res->getStatusCode());
++echo sprintf("Status Code: %s\n\n", $res->getStatusCode());
++echo $res->getBody();
++echo "\n\n";
