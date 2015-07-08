@@ -22,7 +22,7 @@ bundle installed and enabled.
 In Guard, the whole authentication process - reading the `X-TOKEN` header value,
 validating it, returning an error response, etc - is handled in a single class called
 an "Authenticator". Your authenticator can be as crazy as you want, as long as it
-implements `KnpU\Guard\GuardAuthenticatorInterface`.
+implements [KnpU\Guard\GuardAuthenticatorInterface](https://github.com/knpuniversity/KnpUGuard/blob/master/src/GuardAuthenticatorInterface.php).
 
 Most of the time, you can extend a convenience class called `AbstractGuardAuthenticator`.
 Create a new `ApiTokenAuthenticator` class, make it extend this class, and add all
