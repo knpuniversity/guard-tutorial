@@ -12,7 +12,7 @@ composer require knpuniversity/guard-bundle:~0.1@dev
 
 Find your `app/AppKernel.php` file and enable the bundle:
 
-[[[ code('5fe4c20ab2') ]]
+[[[ code('5fe4c20ab2') ]]]
 
 ## 3) Build your first authenticator!
 

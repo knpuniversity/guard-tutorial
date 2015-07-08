@@ -11,6 +11,13 @@ summary: |
     all the hook points you'll ever need to meet whatever crazy authentication
     system you have.
 
+    * API token authentication
+    * "Social login" / OAuth authentication
+    * Customizing success/failure behavior
+    * Customizing error messages
+    * Loading users in complex ways
+    * ... probably anything else
+
 illustration: guard-auth.png
 hasVideoDownload: 0
 
