@@ -100,7 +100,7 @@ either to fetch the username/password from the request and return them.
 
 So, from here, there are 2 possibilities:
 
-   | Conditions            | Result                    | Next Step    
+   | Conditions            | Result                    | Next Step
 -- | --------------------- | ------------------------- | ----------
 A) | Return non-null value | Authentication continues  | [getUser()](#getUser)
 B) | Return null           | Authentication is skipped | Redirect to [getLoginUrl()](#getLoginUrl) (if accessing a secured page)

@@ -61,7 +61,7 @@ See [How can I use Multiple Authenticators?](multiple-authenticators).
 
 <a name="security-providers"></a>
 
-## Authenticating via a Token
+## Filling in the Authenticator Methods
 
 Your authenticator is now being used by Symfony. So let's fill in each method:
 
@@ -74,14 +74,20 @@ to fetch the API token and return it.
 
 Well, that's pretty simple. From here, there are 3 possibilities:
 
-A) The `X-TOKEN` header exists, so this returns a non-null value. In this case,
+   | Conditions                                  | Result                     | Next Step
+-- | ------------------------------------------- | -------------------------- | ----------
+A) | Return non-null value                       | Authentication continues   | [getUser()](#getUser)
+B) | Return null + endpoint requires auth        | Auth skipped, 401 response | [start()](#start)
+C) | Return null+ endpoint does not require auth | Auth skipped, user is anon | nothing
+
+**A)** The `X-TOKEN` header exists, so this returns a non-null value. In this case,
 [getUser()](#getUser) is called next.
 
-B) The `X-TOKEN` header is missing, so this returns `null`. But, your application
+**B)** The `X-TOKEN` header is missing, so this returns `null`. But, your application
 *does* require authentication (e.g. via `access_control` or an `isGranted()` call).
 In this case, see [start()](#start).
 
-C) The `X-TOKEN` header is missing, so this returns `null`. But the user is accessing
+**C)** The `X-TOKEN` header is missing, so this returns `null`. But the user is accessing
 an endpoint that does *not* require authentication. In this case, the request continues
 anonymously - no other methods are called on the authenticator.
 
@@ -104,6 +110,11 @@ User (if any) has this `apiToken` value.
 
 From here, there are 2 possibilities:
 
+   | Conditions                                     | Result                    | Next Step    
+-- | ---------------------------------------------- | ------------------------- | ----------
+A) | Return a User                                  | Authentication continues  | [checkCredentials()](#checkCredentials)
+B) | Return null or throw AuthenticationException   | Authentication fails      | [onAuthenticationFailure()](#onAuthenticationFailure)
+
 A) If you successfully return a `User` object, then, [checkCredentials()](#checkCredentials)
 is called next.
 
@@ -125,6 +136,11 @@ Like before, `$credentials` is whatever you returned from `getCredentials()`. An
 now, the `$user` argument is what you just returned from `getUser()`.
 
 From here, there are 2 possibilities:
+
+   | Conditions                                                 | Result                    | Next Step
+-- | ---------------------------------------------------------- | ------------------------- | -------------
+A) | do anything *except* throwing an `AuthenticationException` | Authentication successful | [onAuthenticationSuccess()](#onAuthenticationSuccess)
+B) | Throw any type of `AuthenticationException`                | Authentication fails      | [onAuthenticationFailure()](#onAuthenticationFailure)
 
 A) If you *don't* throw an exception, congrats! You're authenticated! In this case,
 [onAuthenticationSuccess()](#onAuthenticationSuccess) is called next.
