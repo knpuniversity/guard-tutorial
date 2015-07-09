@@ -100,10 +100,10 @@ either to fetch the username/password from the request and return them.
 
 So, from here, there are 2 possibilities:
 
-   | Conditions            | Result                    | Next Step
--- | --------------------- | ------------------------- | ----------
-A) | Return non-null value | Authentication continues  | [getUser()](#getUser)
-B) | Return null           | Authentication is skipped | Redirect to [getLoginUrl()](#getLoginUrl) (if accessing a secured page)
+C&#35; | Conditions            | Result                    | Next Step
+------ | --------------------- | ------------------------- | ----------
+A)     | Return non-null value | Authentication continues  | [getUser()](#getUser)
+B)     | Return null           | Authentication is skipped | Redirect to [getLoginUrl()](#getLoginUrl) (if accessing a secured page)
 
 **A)** If the URL is `/login_check` (that's the URL that our login form submits to),
 then we fetch the `_username` and `_password` post parameters (these were our
@@ -128,7 +128,7 @@ it lets you pre-fill the login form with this value (see the
 ### getUser()
 
 If `getCredentials()` returns a non-null value, then `getUser()` is called next.
-Its job is simple: return a the user (an object implementing [UserInterface](http://symfony.com/doc/current/cookbook/security/entity_provider.html#what-s-this-userinterface)):
+Its job is simple: return a user (an object implementing [UserInterface](http://symfony.com/doc/current/cookbook/security/entity_provider.html#what-s-this-userinterface)):
 
 [[[ code('ce30843cf7') ]]]
 
