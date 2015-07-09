@@ -74,11 +74,11 @@ to fetch the API token and return it.
 
 Well, that's pretty simple. From here, there are 3 possibilities:
 
-   | Conditions                                  | Result                     | Next Step
--- | ------------------------------------------- | -------------------------- | ----------
-A) | Return non-null value                       | Authentication continues   | [getUser()](#getUser)
-B) | Return null + endpoint requires auth        | Auth skipped, 401 response | [start()](#start)
-C) | Return null+ endpoint does not require auth | Auth skipped, user is anon | nothing
+&#35; | Conditions                                  | Result                     | Next Step
+----- | ------------------------------------------- | -------------------------- | ----------
+A)    | Return non-null value                       | Authentication continues   | [getUser()](#getUser)
+B)    | Return null + endpoint requires auth        | Auth skipped, 401 response | [start()](#start)
+C)    | Return null+ endpoint does not require auth | Auth skipped, user is anon | nothing
 
 **A)** The `X-TOKEN` header exists, so this returns a non-null value. In this case,
 [getUser()](#getUser) is called next.
@@ -110,10 +110,10 @@ User (if any) has this `apiToken` value.
 
 From here, there are 2 possibilities:
 
-   | Conditions                                     | Result                    | Next Step    
--- | ---------------------------------------------- | ------------------------- | ----------
-A) | Return a User                                  | Authentication continues  | [checkCredentials()](#checkCredentials)
-B) | Return null or throw AuthenticationException   | Authentication fails      | [onAuthenticationFailure()](#onAuthenticationFailure)
+&#35; | Conditions                                     | Result                    | Next Step
+----- | ---------------------------------------------- | ------------------------- | ----------
+A)    | Return a User                                  | Authentication continues  | [checkCredentials()](#checkCredentials)
+B)    | Return null or throw AuthenticationException   | Authentication fails      | [onAuthenticationFailure()](#onAuthenticationFailure)
 
 A) If you successfully return a `User` object, then, [checkCredentials()](#checkCredentials)
 is called next.
@@ -137,10 +137,10 @@ now, the `$user` argument is what you just returned from `getUser()`.
 
 From here, there are 2 possibilities:
 
-   | Conditions                                                 | Result                    | Next Step
--- | ---------------------------------------------------------- | ------------------------- | -------------
-A) | do anything *except* throwing an `AuthenticationException` | Authentication successful | [onAuthenticationSuccess()](#onAuthenticationSuccess)
-B) | Throw any type of `AuthenticationException`                | Authentication fails      | [onAuthenticationFailure()](#onAuthenticationFailure)
+&#35; | Conditions                                                 | Result                    | Next Step
+----- | ---------------------------------------------------------- | ------------------------- | -------------
+A)    | do anything *except* throwing an `AuthenticationException` | Authentication successful | [onAuthenticationSuccess()](#onAuthenticationSuccess)
+B)    | Throw any type of `AuthenticationException`                | Authentication fails      | [onAuthenticationFailure()](#onAuthenticationFailure)
 
 A) If you *don't* throw an exception, congrats! You're authenticated! In this case,
 [onAuthenticationSuccess()](#onAuthenticationSuccess) is called next.

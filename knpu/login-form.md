@@ -100,7 +100,7 @@ either to fetch the username/password from the request and return them.
 
 So, from here, there are 2 possibilities:
 
-C&#35; | Conditions            | Result                    | Next Step
+&#35;  | Conditions            | Result                    | Next Step
 ------ | --------------------- | ------------------------- | ----------
 A)     | Return non-null value | Authentication continues  | [getUser()](#getUser)
 B)     | Return null           | Authentication is skipped | Redirect to [getLoginUrl()](#getLoginUrl) (if accessing a secured page)
@@ -139,10 +139,10 @@ the `User` entity.
 
 There are 2 paths from there:
 
-   | Conditions                                        | Result                    | Next Step
--- | ------------------------------------------------- | ------------------------- | -------------
-A) | Return a User object                              | Authentication continues  | [checkCredentials()](#checkCredentials)
-B) | Return null or throw an `AuthenticationException` | Authentication fails      | Redirect to  [getLoginUrl()](#getLoginUrl)
+&#35; | Conditions                                        | Result                    | Next Step
+----- | ------------------------------------------------- | ------------------------- | -------------
+A)    | Return a User object                              | Authentication continues  | [checkCredentials()](#checkCredentials)
+B)    | Return null or throw an `AuthenticationException` | Authentication fails      | Redirect to  [getLoginUrl()](#getLoginUrl)
 
 **A)** If you return some `User` object (using whatever method you want) - then
 you'll continue on to [checkCredentials()](#checkCredentials).
@@ -169,10 +169,10 @@ plain password based on your `security.yml` configuration.
 Want to do some other custom checks beyond the password? Go crazy! Based on what
 you do, there are 2 paths:
 
-   | Conditions                                                 | Result                    | Next Step
--- | ---------------------------------------------------------- | ------------------------- | -------------
-A) | do anything *except* throwing an `AuthenticationException` | Authentication successful | Redirect the user (may involve [getDefaultSucessUrl()](#getDefaultSucessUrl))
-B) | Throw any type of `AuthenticationException`                | Authentication fails      | Redirect to [getLoginUrl()](#getLoginUrl)
+&#35; | Conditions                                                 | Result                    | Next Step
+----- | ---------------------------------------------------------- | ------------------------- | -------------
+A)    | do anything *except* throwing an `AuthenticationException` | Authentication successful | Redirect the user (may involve [getDefaultSucessUrl()](#getDefaultSucessUrl))
+B)    | Throw any type of `AuthenticationException`                | Authentication fails      | Redirect to [getLoginUrl()](#getLoginUrl)
 
 If you *don't* throw an exception, congratulations! You're user is now authenticated,
 and will be redirected somewhere...
