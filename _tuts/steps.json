@@ -76,6 +76,11 @@
             "description": null
         },
         {
+            "id": "formlogin-login-with-username-email",
+            "name": "FormLogin: Login with username\/email",
+            "description": null
+        },
+        {
             "id": "facebook-install-libs",
             "name": "Facebook: Install libs",
             "description": null
@@ -86,5 +91,5 @@
             "description": null
         }
     ],
-    "sha": "95c5debcba5768034e0b9b9cb8b1c0d2baacc496"
+    "sha": "e679dca48c2eaa5e3e4a6d920e3b5e1a654d11fb"
 }
