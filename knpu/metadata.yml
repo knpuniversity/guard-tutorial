@@ -24,7 +24,7 @@ illustration: guard-auth.png
 hasVideoDownload: 0
 
 chapters:
-    installation:
+    install:
         is_finished: true
     login-form:
         is_finished: true

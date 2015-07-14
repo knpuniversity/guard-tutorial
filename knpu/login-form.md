@@ -35,7 +35,7 @@ This form submits to the `/login_check` URL and the field names are `_username` 
 
 ## Installing Guard
 
-Read the short [Installation](installation) chapter to make sure you've got the
+Read the short [Installation](install) chapter to make sure you've got the
 bundle installed and enabled.
 
 ## Creating an Authenticator

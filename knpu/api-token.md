@@ -14,7 +14,7 @@ other way entirely.
 
 ## Installing Guard
 
-Read the short [Installation](installation) chapter to make sure you've got the
+Read the short [Installation](install) chapter to make sure you've got the
 bundle installed and enabled.
 
 ## Creating an Authenticator
