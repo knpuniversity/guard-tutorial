@@ -44,5 +44,7 @@ chapters:
         is_finished: false
     multiple-authenticators:
         is_finished: false
+    fos-user-bundle:
+        is_finished: false
     manually-authenticating:
         is_finished: false
