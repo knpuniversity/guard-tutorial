@@ -30,10 +30,8 @@ chapters:
         is_finished: true
     api-token:
         is_finished: true
-    silex:
-        is_finished: false
     login-form-customize-user:
-        is_finished: false
+        is_finished: true
     login-form-error-messages:
         is_finished: false
     login-form-failure-handling:
@@ -43,6 +41,8 @@ chapters:
     login-form-csrf:
         is_finished: false
     multiple-authenticators:
+        is_finished: false
+    silex:
         is_finished: false
     fos-user-bundle:
         is_finished: false
