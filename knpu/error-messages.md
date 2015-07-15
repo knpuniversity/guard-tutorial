@@ -43,8 +43,8 @@ Use it inside any of the 3 methods above to customize your error message:
 ## Using the Message in onAuthenticationFailure
 
 Whenever any type of `AuthenticationException` is thrown in the process, the
-`onAuthenticationFailure()` method is called on your authenticator. Its second argument
-- `$exception` - will be this exception. Use its `getMessageKey()` to fetch the
+`onAuthenticationFailure()` method is called on your authenticator. Its second argument -
+`$exception` - will be this exception. Use its `getMessageKey()` to fetch the
 correct message:
 
 [[[ code('9d53b88aa6') ]]]
