@@ -34,7 +34,7 @@ chapters:
         is_finished: false
     login-form-customize-user:
         is_finished: true
-    login-form-error-messages:
+    error-messages:
         is_finished: false
     login-form-failure-handling:
         is_finished: false
