@@ -35,7 +35,7 @@ chapters:
     login-form-customize-user:
         is_finished: true
     error-messages:
-        is_finished: false
+        is_finished: true
     login-form-failure-handling:
         is_finished: false
     login-form-success-handling:
