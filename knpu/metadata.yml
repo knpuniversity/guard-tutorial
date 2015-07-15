@@ -30,6 +30,8 @@ chapters:
         is_finished: true
     api-token:
         is_finished: true
+    social-login:
+        is_finished: false
     login-form-customize-user:
         is_finished: true
     login-form-error-messages:
