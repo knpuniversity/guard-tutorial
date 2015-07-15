@@ -81,6 +81,11 @@
             "description": null
         },
         {
+            "id": "formlogin-using-customauthenticationexception",
+            "name": "FormLogin: Using CustomAuthenticationException",
+            "description": null
+        },
+        {
             "id": "facebook-install-libs",
             "name": "Facebook: Install libs",
             "description": null
@@ -91,5 +96,5 @@
             "description": null
         }
     ],
-    "sha": "e679dca48c2eaa5e3e4a6d920e3b5e1a654d11fb"
+    "sha": "9eaf661896b5ed33fb2467b137f88965784f555e"
 }
