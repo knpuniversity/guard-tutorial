@@ -104,7 +104,7 @@ So, from here, there are 2 possibilities:
 &#35;  | Conditions            | Result                    | Next Step
 ------ | --------------------- | ------------------------- | ----------
 A)     | Return non-null value | Authentication continues  | [getUser()](#getUser)
-B)     | Return null           | Authentication is skipped | Redirect to [getLoginUrl()](#getLoginUrl) (if accessing a secured page)
+B)     | Return null           | Authentication is skipped | Nothing! But if the user is anonymous and tries to access a secure page, [getLoginUrl()](#getLoginUrl) will be called
 
 **A)** If the URL is `/login_check` (that's the URL that our login form submits to),
 then we fetch the `_username` and `_password` post parameters (these were our
