@@ -14,12 +14,13 @@ Click **Download** to get the starting or finished code of this tutorial.
 
 ## Create the Login Form
 
-Don't think about security yet! Instead, start by creating two Symfony controllers:
-one for rendering the login form and another that'll handle the login submit:
+Don't think about security yet! Instead, start by creating a Symfony controller with
+two action methods: one for rendering the login form and another that'll handle the
+login submit:
 
 [[[ code('586d873109') ]]]
 
-So far, this is just a lovely, but boring set of controllers. The only interesting
+So far, this is just a lovely, but boring set of actions. The only interesting
 parts are the `last_username` and `error` variables. Where are those coming from?
 You'll see. Also, `loginCheckAction()` doesn't do anything - and it never will. Another
 layer will handle the login submit.
