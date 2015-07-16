@@ -171,15 +171,15 @@ you do, there are 2 paths:
 
 &#35; | Conditions                                                 | Result                    | Next Step
 ----- | ---------------------------------------------------------- | ------------------------- | -------------
-A)    | do anything *except* throwing an `AuthenticationException` | Authentication successful | Redirect the user (may involve [getDefaultSucessUrl()](#getDefaultSucessUrl))
+A)    | do anything *except* throwing an `AuthenticationException` | Authentication successful | Redirect the user (may involve [getDefaultSuccessRedirectUrl()](#getDefaultSuccessRedirectUrl))
 B)    | Throw any type of `AuthenticationException`                | Authentication fails      | Redirect to [getLoginUrl()](#getLoginUrl)
 
 If you *don't* throw an exception, congratulations! You're user is now authenticated,
 and will be redirected somewhere...
 
-<a name="getDefaultSucessUrl"></a>
+<a name="getDefaultSuccessRedirectUrl"></a>
 
-### getDefaultSucessUrl()
+### getDefaultSuccessRedirectUrl()
 
 Your user is now authenticated. Woot! But, where should we redirect them? The `AbstractFormLoginAuthenticator`
 class takes care of *most* of this automatically. If the user originally tried to
