@@ -47,9 +47,14 @@ class User implements UserInterface
     private $roles = array();
 
     /**
-     * @ORM\Column(type="string", unique=true)
+     * @ORM\Column(type="string", unique=true, nullable=true)
      */
     private $apiToken;
+
+    public function __construct()
+    {
+        $this->apiToken = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+    }
 
     public function getId()
     {

@@ -34,7 +34,6 @@ class LoadUserData implements FixtureInterface, ContainerAwareInterface
         $encoded = $this->container->get('security.password_encoder')
             ->encodePassword($annaAdmin, 'kitten');
         $annaAdmin->setPassword($encoded);
-        $annaAdmin->setApiToken('ABCD1234');
 
         $manager->persist($annaAdmin);
         $manager->flush();
