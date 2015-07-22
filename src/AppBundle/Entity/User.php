@@ -51,6 +51,11 @@ class User implements UserInterface
      */
     private $apiToken;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastLoginTime;
+
     public function __construct()
     {
         $this->apiToken = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
@@ -135,5 +140,10 @@ class User implements UserInterface
     public function setApiToken($apiToken)
     {
         $this->apiToken = $apiToken;
+    }
+
+    public function setLastLoginTime(\DateTime $lastLoginTime)
+    {
+        $this->lastLoginTime = $lastLoginTime;
     }
 }
