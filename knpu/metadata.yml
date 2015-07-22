@@ -37,9 +37,9 @@ chapters:
     error-messages:
         is_finished: true
     failure-handling:
-        is_finished: false
-    login-form-success-handling:
-        is_finished: false
+        is_finished: true
+    success-handling:
+        is_finished: true
     login-form-csrf:
         is_finished: false
     multiple-authenticators:

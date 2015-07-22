@@ -21,7 +21,8 @@ back to the user. This could be a redirect back to the login page or a 403 JSON
 response.
 
 If you extend certain authenticators - like `AbstractFormLoginAuthenticator` - then
-this method is filled in for you automatically. But you can feel free to override it and customize:
+this method is filled in for you automatically. But you can feel free to override
+it and customize.
 
 ## Sending back JSON for AJAX
 
