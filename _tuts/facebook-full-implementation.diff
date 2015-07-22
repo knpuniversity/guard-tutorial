@@ -68,10 +68,10 @@ index 5dadd04..843345e 100644
 +            - @service_container
 diff --git a/src/AppBundle/Controller/FacebookConnectController.php b/src/AppBundle/Controller/FacebookConnectController.php
 new file mode 100644
-index 0000000..cfc976e
+index 0000000..bc4268a
 --- /dev/null
 +++ b/src/AppBundle/Controller/FacebookConnectController.php
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,36 @@
 +<?php
 +
 +namespace AppBundle\Controller;
@@ -89,8 +89,15 @@ index 0000000..cfc976e
 +     */
 +    public function connectFacebookAction(Request $request)
 +    {
-+        // redirects to Facebook - see FacebookAuthenticator::start()
-+        return $this->get('app.facebook_authenticator')->start($request);
++        // redirect to Facebook
++        $facebookOAuthProvider = $this->get('app.facebook_provider');
++
++        $url = $facebookOAuthProvider->getAuthorizationUrl([
++            // these are actually the default scopes
++            'scopes' => ['public_profile', 'email'],
++        ]);
++
++        return $this->redirect($url);
 +    }
 +
 +    /**
@@ -133,7 +140,7 @@ index baeeb95..6421105 100644
 +    }
  }
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index f0a0435..79d62f4 100644
+index f0a0435..103341e 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
 @@ -2,6 +2,17 @@
@@ -154,7 +161,7 @@ index f0a0435..79d62f4 100644
  use KnpU\Guard\AbstractGuardAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
  use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-@@ -11,38 +22,137 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
+@@ -11,38 +22,146 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  
  class FacebookAuthenticator extends AbstractGuardAuthenticator
  {
@@ -280,15 +287,24 @@ index f0a0435..79d62f4 100644
 +        return true;
      }
  
++    /**
++     * Called when an anonymous user tries to access an protected page.
++     *
++     * In our app, this is never actually called, because there is only *one*
++     * "entry_point" per firewall and in security.yml, we're using
++     * app.form_login_authenticator as the entry point (so it's start() method
++     * is the one that's called).
++     */
      public function start(Request $request, AuthenticationException $authException = null)
      {
 -        // todo
-+        $authUrl = $this->getFacebookOAuthProvider()->getAuthorizationUrl([
-+            // these are actually the default scopes
-+            'scopes' => ['public_profile', 'email'],
-+        ]);
++        // not called in our app, but if it were, redirecting to the
++        // login page makes sense
++        $url = $this->container->get('router')
++            ->generate('security_login');
 +
-+        return new RedirectResponse($authUrl);
++        return new RedirectResponse($url);
++
 +    }
 +
 +    /**
