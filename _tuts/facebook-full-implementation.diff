@@ -140,7 +140,7 @@ index baeeb95..6421105 100644
 +    }
  }
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index f0a0435..103341e 100644
+index f0a0435..8a869c4 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
 @@ -2,6 +2,17 @@
@@ -161,7 +161,7 @@ index f0a0435..103341e 100644
  use KnpU\Guard\AbstractGuardAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
  use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-@@ -11,38 +22,146 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
+@@ -11,38 +22,140 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  
  class FacebookAuthenticator extends AbstractGuardAuthenticator
  {
@@ -195,9 +195,11 @@ index f0a0435..103341e 100644
      public function getUser($authorizationCode, UserProviderInterface $userProvider)
      {
 -        // todo
++        $facebookProvider = $this->container->get('app.facebook_provider');
++
 +        try {
 +            // the credentials are really the access token
-+            $accessToken = $this->getFacebookOAuthProvider()->getAccessToken(
++            $accessToken = $facebookProvider->getAccessToken(
 +                'authorization_code',
 +                ['code' => $authorizationCode]
 +            );
@@ -213,7 +215,7 @@ index f0a0435..103341e 100644
 +        }
 +
 +        /** @var FacebookUser $facebookUser */
-+        $facebookUser = $this->getFacebookOAuthProvider()->getResourceOwner($accessToken);
++        $facebookUser = $facebookProvider->getResourceOwner($accessToken);
 +        $email = $facebookUser->getEmail();
 +
 +        $em = $this->container->get('doctrine')->getManager();
@@ -305,13 +307,5 @@ index f0a0435..103341e 100644
 +
 +        return new RedirectResponse($url);
 +
-+    }
-+
-+    /**
-+     * @return Facebook
-+     */
-+    private function getFacebookOAuthProvider()
-+    {
-+        return $this->container->get('app.facebook_provider');
      }
  }
