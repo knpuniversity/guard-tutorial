@@ -1,5 +1,5 @@
 diff --git a/composer.json b/composer.json
-index 7ef9163..a9cff0a 100644
+index 7ef9163..b19a15f 100644
 --- a/composer.json
 +++ b/composer.json
 @@ -22,7 +22,9 @@
@@ -9,12 +9,12 @@ index 7ef9163..a9cff0a 100644
 -        "guzzlehttp/guzzle": "~6.0"
 +        "guzzlehttp/guzzle": "~6.0",
 +        "league/oauth2-client": "~1.0@dev",
-+        "league/oauth2-facebook": "~0.0.9"
++        "league/oauth2-facebook": "^0.0.11"
      },
      "require-dev": {
          "sensio/generator-bundle": "~2.3"
 diff --git a/composer.lock b/composer.lock
-index 662eaf1..6f572ab 100644
+index 662eaf1..ff9c89b 100644
 --- a/composer.lock
 +++ b/composer.lock
 @@ -4,7 +4,7 @@
@@ -22,7 +22,7 @@ index 662eaf1..6f572ab 100644
          "This file is @generated automatically"
      ],
 -    "hash": "1409e0788d9a54dc481baae36e51ce14",
-+    "hash": "8170fabe9f7c6a419d8714bcf6e271d2",
++    "hash": "0a7151ef538df33f401b9b1bf4a2909f",
      "packages": [
          {
              "name": "doctrine/annotations",
@@ -137,12 +137,12 @@ index 662eaf1..6f572ab 100644
 +            "source": {
 +                "type": "git",
 +                "url": "https://github.com/thephpleague/oauth2-client.git",
-+                "reference": "cc055f4e5968d6bc384dac773962140b3f8c6354"
++                "reference": "16152b7e4c8f836b59ff88e8699b65c7b68269d7"
 +            },
 +            "dist": {
 +                "type": "zip",
-+                "url": "https://api.github.com/repos/thephpleague/oauth2-client/zipball/cc055f4e5968d6bc384dac773962140b3f8c6354",
-+                "reference": "cc055f4e5968d6bc384dac773962140b3f8c6354",
++                "url": "https://api.github.com/repos/thephpleague/oauth2-client/zipball/16152b7e4c8f836b59ff88e8699b65c7b68269d7",
++                "reference": "16152b7e4c8f836b59ff88e8699b65c7b68269d7",
 +                "shasum": ""
 +            },
 +            "require": {
@@ -192,20 +192,20 @@ index 662eaf1..6f572ab 100644
 +                "oauth2",
 +                "single sign on"
 +            ],
-+            "time": "2015-06-29 11:01:00"
++            "time": "2015-07-21 21:25:50"
 +        },
 +        {
 +            "name": "league/oauth2-facebook",
-+            "version": "0.0.9",
++            "version": "0.0.11",
 +            "source": {
 +                "type": "git",
 +                "url": "https://github.com/thephpleague/oauth2-facebook.git",
-+                "reference": "8dca4fd01d8c89c3b80dd6dea1c54234da86ee7d"
++                "reference": "70684b59bd6064b95a118ec19866676adb360ef5"
 +            },
 +            "dist": {
 +                "type": "zip",
-+                "url": "https://api.github.com/repos/thephpleague/oauth2-facebook/zipball/8dca4fd01d8c89c3b80dd6dea1c54234da86ee7d",
-+                "reference": "8dca4fd01d8c89c3b80dd6dea1c54234da86ee7d",
++                "url": "https://api.github.com/repos/thephpleague/oauth2-facebook/zipball/70684b59bd6064b95a118ec19866676adb360ef5",
++                "reference": "70684b59bd6064b95a118ec19866676adb360ef5",
 +                "shasum": ""
 +            },
 +            "require": {
@@ -243,7 +243,7 @@ index 662eaf1..6f572ab 100644
 +                "oauth",
 +                "oauth2"
 +            ],
-+            "time": "2015-06-30 20:26:02"
++            "time": "2015-07-14 17:26:37"
 +        },
 +        {
              "name": "monolog/monolog",

@@ -1,3 +1,15 @@
+diff --git a/app/Resources/views/security/login.html.twig b/app/Resources/views/security/login.html.twig
+index 0d5b3a4..23720ac 100644
+--- a/app/Resources/views/security/login.html.twig
++++ b/app/Resources/views/security/login.html.twig
+@@ -20,5 +20,7 @@
+ 
+         <br/>
+         <button type="submit">Login</button>
++
++        <a href="{{ path('connect_facebook') }}">Login with Facebook</a>
+     </form>
+ {% endblock %}
 diff --git a/app/config/parameters.yml.dist b/app/config/parameters.yml.dist
 index 886c92b..2833651 100644
 --- a/app/config/parameters.yml.dist
@@ -20,24 +32,32 @@ index 23ce35a..d802b03 100644
                  # by default, use the start() function from FormLoginAuthenticator
                  entry_point: app.form_login_authenticator
 diff --git a/app/config/services.yml b/app/config/services.yml
-index 5dadd04..cd19b95 100644
+index 5dadd04..843345e 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
-@@ -11,3 +11,11 @@ services:
+@@ -11,3 +11,19 @@ services:
      app.api_token_authenticator:
          class: AppBundle\Security\ApiTokenAuthenticator
          arguments: ["@doctrine.orm.entity_manager"]
 +
++    app.facebook_provider:
++        class: League\OAuth2\Client\Provider\Facebook
++        arguments:
++            -
++                clientId: %facebook_app_id%
++                clientSecret: %facebook_app_secret%
++                graphApiVersion: v2.3
++                redirectUri: "@=service('router').generate('connect_facebook_check', {}, true)"
++
 +    app.facebook_authenticator:
 +        class: AppBundle\Security\FacebookAuthenticator
 +        arguments:
-+            - @doctrine.orm.entity_manager
-+            - %facebook_app_id%
-+            - %facebook_app_secret%
-+            - @router
++            # you can also inject the services you need individually
++            # except for the router, as it causes a circular reference problem
++            - @service_container
 diff --git a/src/AppBundle/Controller/FacebookConnectController.php b/src/AppBundle/Controller/FacebookConnectController.php
 new file mode 100644
-index 0000000..3fbb234
+index 0000000..85fb318
 --- /dev/null
 +++ b/src/AppBundle/Controller/FacebookConnectController.php
 @@ -0,0 +1,28 @@
@@ -64,26 +84,60 @@ index 0000000..3fbb234
 +    /**
 +     * @Route("/connect/facebook-check", name="connect_facebook_check")
 +     */
-+    public function secureAction()
++    public function connectFacebookActionCheck()
 +    {
 +        // will not be reached!
 +    }
 +}
+diff --git a/src/AppBundle/Entity/User.php b/src/AppBundle/Entity/User.php
+index baeeb95..6421105 100644
+--- a/src/AppBundle/Entity/User.php
++++ b/src/AppBundle/Entity/User.php
+@@ -51,6 +51,11 @@ class User implements UserInterface
+      */
+     private $apiToken;
+ 
++    /**
++     * @ORM\Column(type="string", length=50, nullable=true)
++     */
++    private $facebookId;
++
+     public function __construct()
+     {
+         $this->apiToken = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
+@@ -136,4 +141,14 @@ class User implements UserInterface
+     {
+         $this->apiToken = $apiToken;
+     }
++
++    public function getFacebookId()
++    {
++        return $this->facebookId;
++    }
++
++    public function setFacebookId($facebookId)
++    {
++        $this->facebookId = $facebookId;
++    }
+ }
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
 new file mode 100644
-index 0000000..f30a161
+index 0000000..9a6a475
 --- /dev/null
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
-@@ -0,0 +1,148 @@
+@@ -0,0 +1,166 @@
 +<?php
 +
 +namespace AppBundle\Security;
 +
++use AppBundle\Entity\User;
 +use Doctrine\ORM\EntityManager;
 +use KnpU\Guard\AbstractGuardAuthenticator;
 +use KnpU\Guard\Exception\CustomAuthenticationException;
++use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 +use League\OAuth2\Client\Provider\Facebook;
 +use League\OAuth2\Client\Provider\FacebookUser;
++use Symfony\Component\DependencyInjection\ContainerInterface;
 +use Symfony\Component\HttpFoundation\RedirectResponse;
 +use Symfony\Component\HttpFoundation\Request;
 +use Symfony\Component\HttpFoundation\Response;
@@ -96,19 +150,11 @@ index 0000000..f30a161
 +
 +class FacebookAuthenticator extends AbstractGuardAuthenticator
 +{
-+    private $em;
-+    private $appId;
-+    private $appSecret;
-+    private $router;
++    private $container;
 +
-+    private $facebookProvider;
-+
-+    public function __construct(EntityManager $em, $appId, $appSecret, RouterInterface $router)
++    public function __construct(ContainerInterface $container)
 +    {
-+        $this->em = $em;
-+        $this->appId = $appId;
-+        $this->appSecret = $appSecret;
-+        $this->router = $router;
++        $this->container = $container;
 +    }
 +
 +    public function getCredentials(Request $request)
@@ -122,7 +168,7 @@ index 0000000..f30a161
 +            return $code;
 +        }
 +
-+        // no code! Something went wrong
++        // no code! Something went wrong. Quite probably the user denied our app access
 +        // you could read the error, error_code, error_description, error_reason query params
 +        // http://localhost:8000/connect/facebook-check?error=access_denied&error_code=200&error_description=Permissions+error&error_reason=user_denied&state=S2fKgHJSZSJM0Qs2fhKL6USZP50KSBHc#_=_
 +        throw CustomAuthenticationException::createWithSafeMessage(
@@ -132,31 +178,63 @@ index 0000000..f30a161
 +
 +    public function getUser($authorizationCode, UserProviderInterface $userProvider)
 +    {
-+        // the credentials are really the access token
-+        $accessToken = $this->getFacebookOAuthProvider()->getAccessToken(
-+            'authorization_code',
-+            ['code' => $authorizationCode]
-+        );
++        try {
++            // the credentials are really the access token
++            $accessToken = $this->getFacebookOAuthProvider()->getAccessToken(
++                'authorization_code',
++                ['code' => $authorizationCode]
++            );
++        } catch (IdentityProviderException $e) {
++            // probably the authorization code has been used already
++            $response = $e->getResponseBody();
++            $errorCode = $response['error']['code'];
++            $message = $response['error']['message'];
 +
-+        if (!$accessToken) {
 +            throw CustomAuthenticationException::createWithSafeMessage(
-+                'There was an error getting access from Facebook. Please try again.'
++                'There was an error logging you into Facebook - code '.$errorCode
 +            );
 +        }
 +
-+        /** @var FacebookUser $userDetails */
-+        $userDetails = $this->getFacebookOAuthProvider()->getUser($accessToken);
++        /** @var FacebookUser $facebookUser */
++        $facebookUser = $this->getFacebookOAuthProvider()->getResourceOwner($accessToken);
++        $email = $facebookUser->getEmail();
 +
-+        $email = $userDetails->getEmail();
++        $em = $this->container->get('doctrine')->getManager();
 +
-+        // todo - create a user if one doesn't exist
-+        return $this->em->getRepository('AppBundle:User')
-+            ->findOneBy(array('email' => $email));
++        // 1) have they logged in with Facebook before? Easy!
++        $existingUser = $em->getRepository('AppBundle:User')
++            ->findOneBy(array('facebookId' => $facebookUser->getId()));
++        if ($existingUser) {
++            return $existingUser;
++        }
++
++        // 2) do we have a matching user by email?
++        $user = $em->getRepository('AppBundle:User')
++                    ->findOneBy(array('email' => $email));
++
++        // 3) no user? Perhaps you just want to create one
++        //      or maybe you want to redirect to a registration (in that case, keep reading_
++        if (!$user) {
++            $user = new User();
++            $user->setUsername($email);
++            $user->setEmail($email);
++            // set an un-encoded password, which basically makes it *not* possible
++            // to login with any password
++            $user->setPassword('no password');
++        }
++
++        // make sure the Facebook user is set
++        $user->setFacebookId($facebookUser->getId());
++        $em->persist($user);
++        $em->flush();
++
++        return $user;
 +    }
 +
 +    public function checkCredentials($credentials, UserInterface $user)
 +    {
-+        // do nothing - if we got a user, we're good
++        // do nothing - the fact that the access token worked means that
++        // our app has been authorized with Facebook
 +    }
 +
 +    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
@@ -164,7 +242,10 @@ index 0000000..f30a161
 +        // this would happen if something went wrong in the OAuth flow
 +        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
 +
-+        return new RedirectResponse($this->router->generate('security_login'));
++        $url = $this->container->get('router')
++            ->generate('security_login');
++
++        return new RedirectResponse($url);
 +    }
 +
 +    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
@@ -173,7 +254,8 @@ index 0000000..f30a161
 +        $targetPath = $request->getSession()->get('_security.'.$providerKey.'.target_path');
 +
 +        if (!$targetPath) {
-+            $targetPath = $this->router->generate('homepage');
++            $router = $this->container->get('router');
++            $targetPath = $router->generate('homepage');
 +        }
 +
 +        return new RedirectResponse($targetPath);
@@ -195,7 +277,7 @@ index 0000000..f30a161
 +    public function start(Request $request, AuthenticationException $authException = null)
 +    {
 +        $authUrl = $this->getFacebookOAuthProvider()->getAuthorizationUrl([
-+            // these are actually the default copes
++            // these are actually the default scopes
 +            'scopes' => ['public_profile', 'email'],
 +        ]);
 +
@@ -207,19 +289,6 @@ index 0000000..f30a161
 +     */
 +    private function getFacebookOAuthProvider()
 +    {
-+        if ($this->facebookProvider === null) {
-+            $this->facebookProvider = new Facebook(array(
-+                'clientId' => $this->appId,
-+                'clientSecret' => $this->appSecret,
-+                'redirectUri' => $this->router->generate(
-+                    'connect_facebook_check',
-+                    [],
-+                    RouterInterface::ABSOLUTE_URL
-+                ),
-+                'graphApiVersion' => 'v2.3',
-+            ));
-+        }
-+
-+        return $this->facebookProvider;
++        return $this->container->get('app.facebook_provider');
 +    }
 +}

@@ -1,0 +1,202 @@
+diff --git a/app/Resources/views/facebook/registration.html.twig b/app/Resources/views/facebook/registration.html.twig
+new file mode 100644
+index 0000000..af752a5
+--- /dev/null
++++ b/app/Resources/views/facebook/registration.html.twig
+@@ -0,0 +1,9 @@
++{% extends 'base.html.twig' %}
++
++{% block body %}
++    {{ form_start(form) }}
++        {{ form_widget(form) }}
++
++        <button type="submit">Register!</button>
++    {{ form_end(form) }}
++{% endblock %}
+diff --git a/src/AppBundle/Controller/FacebookConnectController.php b/src/AppBundle/Controller/FacebookConnectController.php
+index 85fb318..26a5fab 100644
+--- a/src/AppBundle/Controller/FacebookConnectController.php
++++ b/src/AppBundle/Controller/FacebookConnectController.php
+@@ -2,6 +2,9 @@
+ 
+ namespace AppBundle\Controller;
+ 
++use AppBundle\Entity\User;
++use AppBundle\Form\FacebookRegistrationType;
++use League\OAuth2\Client\Provider\FacebookUser;
+ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+ use Symfony\Component\HttpFoundation\Request;
+@@ -25,4 +28,51 @@ class FacebookConnectController extends Controller
+     {
+         // will not be reached!
+     }
++
++    /**
++     * @Route("/connect/facebook/registration", name="connect_facebook_registration")
++     */
++    public function finishRegistration(Request $request)
++    {
++        // stored in the session in FacebookAuthenticator
++        /** @var FacebookUser $facebookUser */
++        $facebookUser = $request->getSession()->get('facebook_user');
++        if (!$facebookUser) {
++            throw $this->createNotFoundException('How did you get here without user information!?');
++        }
++        $user = new User();
++        $user->setFacebookId($facebookUser->getId());
++        $user->setEmail($facebookUser->getEmail());
++
++        $form = $this->createForm(new FacebookRegistrationType(), $user);
++
++        $form->handleRequest($request);
++        if ($form->isValid()) {
++            // encode the password manually
++            $plainPassword = $form['plainPassword']->getData();
++            $encodedPassword = $this->get('security.password_encoder')
++                ->encodePassword($user, $plainPassword);
++            $user->setPassword($encodedPassword);
++
++            $em = $this->getDoctrine()->getManager();
++            $em->persist($user);
++            $em->flush();
++
++            // remove the session information
++            $request->getSession()->remove('facebook_user');
++
++            // log the user in manually
++            $guardHandler = $this->container->get('security.authentication.guard_handler');
++            return $guardHandler->authenticateUserAndHandleSuccess(
++                $user,
++                $request,
++                $this->container->get('app.facebook_authenticator'),
++                'main' // the firewall key
++            );
++        }
++
++        return $this->render('facebook/registration.html.twig', array(
++            'form' => $form->createView()
++        ));
++    }
+ }
+diff --git a/src/AppBundle/Form/FacebookRegistrationType.php b/src/AppBundle/Form/FacebookRegistrationType.php
+new file mode 100644
+index 0000000..b3da268
+--- /dev/null
++++ b/src/AppBundle/Form/FacebookRegistrationType.php
+@@ -0,0 +1,37 @@
++<?php
++
++namespace AppBundle\Form;
++
++use Symfony\Component\Form\AbstractType;
++use Symfony\Component\Form\FormBuilderInterface;
++use Symfony\Component\OptionsResolver\OptionsResolver;
++
++class FacebookRegistrationType extends AbstractType
++{
++    public function buildForm(FormBuilderInterface $builder, array $options)
++    {
++        $builder
++            ->add('username', 'text')
++            ->add('email', 'text', array(
++                'disabled' => true
++            ))
++            ->add('plainPassword', 'repeated', array(
++                'mapped' => false, // allows this to not be a real property on User
++                'type' => 'password',
++                'first_options'  => array('label' => 'Password'),
++                'second_options'  => array('label' => 'Password again'),
++            ));
++    }
++
++    public function configureOptions(OptionsResolver $resolver)
++    {
++        $resolver->setDefaults(array(
++            'data_class' => 'AppBundle\Entity\User'
++        ));
++    }
++
++    public function getName()
++    {
++        return 'app_bundle_user_registration_type';
++    }
++}
+diff --git a/src/AppBundle/OAuth/FinishFacebookRegistrationException.php b/src/AppBundle/OAuth/FinishFacebookRegistrationException.php
+new file mode 100644
+index 0000000..c768f46
+--- /dev/null
++++ b/src/AppBundle/OAuth/FinishFacebookRegistrationException.php
+@@ -0,0 +1,24 @@
++<?php
++
++namespace AppBundle\OAuth;
++
++use Exception;
++use League\OAuth2\Client\Provider\ResourceOwnerInterface;
++use Symfony\Component\Security\Core\Exception\AuthenticationException;
++
++class FinishFacebookRegistrationException extends AuthenticationException
++{
++    private $facebookUser;
++
++    public function __construct(ResourceOwnerInterface $facebookUser, $message = "", $code = 0, Exception $previous = null)
++    {
++        $this->facebookUser = $facebookUser;
++
++        parent::__construct($message, $code, $previous);
++    }
++
++    public function getFacebookUser()
++    {
++        return $this->facebookUser;
++    }
++}
+diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
+index 9a6a475..f9d5742 100644
+--- a/src/AppBundle/Security/FacebookAuthenticator.php
++++ b/src/AppBundle/Security/FacebookAuthenticator.php
+@@ -3,6 +3,7 @@
+ namespace AppBundle\Security;
+ 
+ use AppBundle\Entity\User;
++use AppBundle\OAuth\FinishFacebookRegistrationException;
+ use Doctrine\ORM\EntityManager;
+ use KnpU\Guard\AbstractGuardAuthenticator;
+ use KnpU\Guard\Exception\CustomAuthenticationException;
+@@ -84,15 +85,10 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
+         $user = $em->getRepository('AppBundle:User')
+                     ->findOneBy(array('email' => $email));
+ 
+-        // 3) no user? Perhaps you just want to create one
+-        //      or maybe you want to redirect to a registration (in that case, keep reading_
++        // 3) no user? Redirect to finish registration
+         if (!$user) {
+-            $user = new User();
+-            $user->setUsername($email);
+-            $user->setEmail($email);
+-            // set an un-encoded password, which basically makes it *not* possible
+-            // to login with any password
+-            $user->setPassword('no password');
++            // throw a special exception we created - see onAuthenticaitonFailure
++            throw new FinishFacebookRegistrationException($facebookUser);
+         }
+ 
+         // make sure the Facebook user is set
+@@ -111,6 +107,16 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
+ 
+     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+     {
++        if ($exception instanceof FinishFacebookRegistrationException) {
++            // actually, we just need to redirect to finish registration
++            $request->getSession()->set('facebook_user', $exception->getFacebookUser());
++
++            $url = $this->container->get('router')
++                ->generate('connect_facebook_registration');
++
++            return new RedirectResponse($url);
++        }
++
+         // this would happen if something went wrong in the OAuth flow
+         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+ 

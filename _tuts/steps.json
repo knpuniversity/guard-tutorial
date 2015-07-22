@@ -94,7 +94,12 @@
             "id": "facebook-full-implementation",
             "name": "Facebook: Full implementation",
             "description": null
+        },
+        {
+            "id": "facebook-finish-registration",
+            "name": "Facebook: Finish Registration",
+            "description": null
         }
     ],
-    "sha": "9eaf661896b5ed33fb2467b137f88965784f555e"
+    "sha": "055132478939285c4eb7dcaafbf2b3e81fae89d6"
 }
