@@ -10,6 +10,17 @@ index 0d5b3a4..23720ac 100644
 +        <a href="{{ path('connect_facebook') }}">Login with Facebook</a>
      </form>
  {% endblock %}
+diff --git a/app/config/parameters.yml b/app/config/parameters.yml
+index f5e0347..b579b4a 100644
+--- a/app/config/parameters.yml
++++ b/app/config/parameters.yml
+@@ -10,3 +10,6 @@ parameters:
+     mailer_user: null
+     mailer_password: null
+     secret: a3250d79a622c2f1d034943d9ff4397d500552dd
++    facebook_app_id:  XXXX
++    facebook_app_secret: XXXX
++
 diff --git a/app/config/parameters.yml.dist b/app/config/parameters.yml.dist
 index 886c92b..2833651 100644
 --- a/app/config/parameters.yml.dist
