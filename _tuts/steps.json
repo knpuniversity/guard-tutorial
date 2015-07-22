@@ -91,6 +91,11 @@
             "description": null
         },
         {
+            "id": "facebook-create-empty-authenticator",
+            "name": "Facebook: Create empty authenticator",
+            "description": null
+        },
+        {
             "id": "facebook-full-implementation",
             "name": "Facebook: Full implementation",
             "description": null
@@ -101,5 +106,5 @@
             "description": null
         }
     ],
-    "sha": "680e57a811706e00cc17e6cf256c539e45b1ec5c"
+    "sha": "5c37db5da248484e00869d7e6caa4f22eddb08e2"
 }

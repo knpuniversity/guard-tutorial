@@ -133,35 +133,31 @@ index baeeb95..6421105 100644
 +    }
  }
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-new file mode 100644
-index 0000000..9a6a475
---- /dev/null
+index f0a0435..79d62f4 100644
+--- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
-@@ -0,0 +1,166 @@
-+<?php
-+
-+namespace AppBundle\Security;
-+
+@@ -2,6 +2,17 @@
+ 
+ namespace AppBundle\Security;
+ 
 +use AppBundle\Entity\User;
 +use Doctrine\ORM\EntityManager;
-+use KnpU\Guard\AbstractGuardAuthenticator;
 +use KnpU\Guard\Exception\CustomAuthenticationException;
 +use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 +use League\OAuth2\Client\Provider\Facebook;
 +use League\OAuth2\Client\Provider\FacebookUser;
 +use Symfony\Component\DependencyInjection\ContainerInterface;
 +use Symfony\Component\HttpFoundation\RedirectResponse;
-+use Symfony\Component\HttpFoundation\Request;
 +use Symfony\Component\HttpFoundation\Response;
 +use Symfony\Component\Routing\RouterInterface;
-+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 +use Symfony\Component\Security\Core\Security;
-+use Symfony\Component\Security\Core\User\UserInterface;
-+use Symfony\Component\Security\Core\User\UserProviderInterface;
-+
-+class FacebookAuthenticator extends AbstractGuardAuthenticator
-+{
+ use KnpU\Guard\AbstractGuardAuthenticator;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+@@ -11,38 +22,137 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
+ 
+ class FacebookAuthenticator extends AbstractGuardAuthenticator
+ {
 +    private $container;
 +
 +    public function __construct(ContainerInterface $container)
@@ -169,8 +165,9 @@ index 0000000..9a6a475
 +        $this->container = $container;
 +    }
 +
-+    public function getCredentials(Request $request)
-+    {
+     public function getCredentials(Request $request)
+     {
+-        // todo
 +        if ($request->getPathInfo() != '/connect/facebook-check') {
 +            // skip authentication unless we're on this URL!
 +            return null;
@@ -186,10 +183,11 @@ index 0000000..9a6a475
 +        throw CustomAuthenticationException::createWithSafeMessage(
 +            'There was an error getting access from Facebook. Please try again.'
 +        );
-+    }
-+
-+    public function getUser($authorizationCode, UserProviderInterface $userProvider)
-+    {
+     }
+ 
+     public function getUser($authorizationCode, UserProviderInterface $userProvider)
+     {
+-        // todo
 +        try {
 +            // the credentials are really the access token
 +            $accessToken = $this->getFacebookOAuthProvider()->getAccessToken(
@@ -241,16 +239,18 @@ index 0000000..9a6a475
 +        $em->flush();
 +
 +        return $user;
-+    }
-+
-+    public function checkCredentials($credentials, UserInterface $user)
-+    {
+     }
+ 
+     public function checkCredentials($credentials, UserInterface $user)
+     {
+-        // todo
 +        // do nothing - the fact that the access token worked means that
 +        // our app has been authorized with Facebook
-+    }
-+
-+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
-+    {
+     }
+ 
+     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+     {
+-        // todo
 +        // this would happen if something went wrong in the OAuth flow
 +        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
 +
@@ -258,10 +258,11 @@ index 0000000..9a6a475
 +            ->generate('security_login');
 +
 +        return new RedirectResponse($url);
-+    }
-+
-+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
-+    {
+     }
+ 
+     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+     {
+-        // todo
 +        // todo - remove needing this crazy thing
 +        $targetPath = $request->getSession()->get('_security.'.$providerKey.'.target_path');
 +
@@ -271,23 +272,17 @@ index 0000000..9a6a475
 +        }
 +
 +        return new RedirectResponse($targetPath);
-+    }
-+
-+    public function supportsRememberMe()
-+    {
+     }
+ 
+     public function supportsRememberMe()
+     {
+-        // todo
 +        return true;
-+    }
-+
-+    /**
-+     * Starts the authentication scheme.
-+     *
-+     * @param Request $request The request that resulted in an AuthenticationException
-+     * @param AuthenticationException $authException The exception that started the authentication process
-+     *
-+     * @return Response
-+     */
-+    public function start(Request $request, AuthenticationException $authException = null)
-+    {
+     }
+ 
+     public function start(Request $request, AuthenticationException $authException = null)
+     {
+-        // todo
 +        $authUrl = $this->getFacebookOAuthProvider()->getAuthorizationUrl([
 +            // these are actually the default scopes
 +            'scopes' => ['public_profile', 'email'],
@@ -302,5 +297,5 @@ index 0000000..9a6a475
 +    private function getFacebookOAuthProvider()
 +    {
 +        return $this->container->get('app.facebook_provider');
-+    }
-+}
+     }
+ }

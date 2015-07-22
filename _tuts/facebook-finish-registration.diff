@@ -153,7 +153,7 @@ index 0000000..c768f46
 +    }
 +}
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index 9a6a475..f9d5742 100644
+index 79d62f4..99b838e 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
 @@ -3,6 +3,7 @@
@@ -162,8 +162,8 @@ index 9a6a475..f9d5742 100644
  use AppBundle\Entity\User;
 +use AppBundle\OAuth\FinishFacebookRegistrationException;
  use Doctrine\ORM\EntityManager;
- use KnpU\Guard\AbstractGuardAuthenticator;
  use KnpU\Guard\Exception\CustomAuthenticationException;
+ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 @@ -84,15 +85,10 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
          $user = $em->getRepository('AppBundle:User')
                      ->findOneBy(array('email' => $email));
