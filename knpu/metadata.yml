@@ -36,7 +36,7 @@ chapters:
         is_finished: true
     error-messages:
         is_finished: true
-    login-form-failure-handling:
+    form-failure-handling:
         is_finished: false
     login-form-success-handling:
         is_finished: false
