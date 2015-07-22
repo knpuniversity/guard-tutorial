@@ -1,0 +1,37 @@
+diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
+index 77a1011..7b6d1ab 100644
+--- a/src/AppBundle/Security/FormLoginAuthenticator.php
++++ b/src/AppBundle/Security/FormLoginAuthenticator.php
+@@ -5,8 +5,10 @@ namespace AppBundle\Security;
+ use KnpU\Guard\Authenticator\AbstractFormLoginAuthenticator;
+ use KnpU\Guard\Exception\CustomAuthenticationException;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
++use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\Routing\RouterInterface;
++use Symfony\Component\Security\Core\Exception\AuthenticationException;
+ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
+ use Symfony\Component\Security\Core\Security;
+ use Symfony\Component\Security\Core\User\UserInterface;
+@@ -66,6 +68,21 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
+         }
+     }
+ 
++    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
++    {
++        // AJAX! Maybe return some JSON
++        if ($request->isXmlHttpRequest()) {
++            return new JsonResponse(
++                // you could translate the message
++                array('message' => $exception->getMessageKey()),
++                403
++            );
++        }
++
++        // for non-AJAX requests, return the normal redirect
++        return parent::onAuthenticationFailure($request, $exception);
++    }
++
+     protected function getLoginUrl()
+     {
+         return $this->container->get('router')

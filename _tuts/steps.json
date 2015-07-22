@@ -86,6 +86,11 @@
             "description": null
         },
         {
+            "id": "formlogin-ajax-on-failure",
+            "name": "FormLogin: AJAX on failure",
+            "description": null
+        },
+        {
             "id": "facebook-install-libs",
             "name": "Facebook: Install libs",
             "description": null
@@ -106,5 +111,5 @@
             "description": null
         }
     ],
-    "sha": "a6f197615529c253ca1af08d3efa940dc28b7be8"
+    "sha": "e829c9784af3f67e5fb1d558458213c115094933"
 }
