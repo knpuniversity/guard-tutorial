@@ -36,6 +36,10 @@ event that you can hook into. Why is this better? Because this will be called wh
 a user logs in, whether it is via this authenticator, another authenticator or some
 non-Guard system.
 
+***TIP
+Everything in this section works in normal Symfony, even without Guard!
+***
+
 First, make sure you have a column on your user:
 
 [[[ code('65a4b3aa56') ]]]
