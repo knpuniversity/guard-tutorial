@@ -14,7 +14,7 @@ index 0000000..af752a5
 +    {{ form_end(form) }}
 +{% endblock %}
 diff --git a/src/AppBundle/Controller/FacebookConnectController.php b/src/AppBundle/Controller/FacebookConnectController.php
-index 85fb318..26a5fab 100644
+index cfc976e..60268f2 100644
 --- a/src/AppBundle/Controller/FacebookConnectController.php
 +++ b/src/AppBundle/Controller/FacebookConnectController.php
 @@ -2,6 +2,9 @@
@@ -27,7 +27,7 @@ index 85fb318..26a5fab 100644
  use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
  use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  use Symfony\Component\HttpFoundation\Request;
-@@ -25,4 +28,51 @@ class FacebookConnectController extends Controller
+@@ -26,4 +29,51 @@ class FacebookConnectController extends Controller
      {
          // will not be reached!
      }

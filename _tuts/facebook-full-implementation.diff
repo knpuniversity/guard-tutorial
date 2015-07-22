@@ -68,10 +68,10 @@ index 5dadd04..843345e 100644
 +            - @service_container
 diff --git a/src/AppBundle/Controller/FacebookConnectController.php b/src/AppBundle/Controller/FacebookConnectController.php
 new file mode 100644
-index 0000000..85fb318
+index 0000000..cfc976e
 --- /dev/null
 +++ b/src/AppBundle/Controller/FacebookConnectController.php
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,29 @@
 +<?php
 +
 +namespace AppBundle\Controller;
@@ -89,6 +89,7 @@ index 0000000..85fb318
 +     */
 +    public function connectFacebookAction(Request $request)
 +    {
++        // redirects to Facebook - see FacebookAuthenticator::start()
 +        return $this->get('app.facebook_authenticator')->start($request);
 +    }
 +
