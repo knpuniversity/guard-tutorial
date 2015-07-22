@@ -43,13 +43,13 @@ index 23ce35a..d802b03 100644
                  # by default, use the start() function from FormLoginAuthenticator
                  entry_point: app.form_login_authenticator
 diff --git a/app/config/services.yml b/app/config/services.yml
-index 5dadd04..843345e 100644
+index e10b621..5d28438 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
-@@ -11,3 +11,19 @@ services:
-     app.api_token_authenticator:
-         class: AppBundle\Security\ApiTokenAuthenticator
+@@ -17,3 +17,19 @@ services:
          arguments: ["@doctrine.orm.entity_manager"]
+         tags:
+             - { name: kernel.event_subscriber }
 +
 +    app.facebook_provider:
 +        class: League\OAuth2\Client\Provider\Facebook
@@ -109,12 +109,12 @@ index 0000000..bc4268a
 +    }
 +}
 diff --git a/src/AppBundle/Entity/User.php b/src/AppBundle/Entity/User.php
-index baeeb95..6421105 100644
+index 53297e6..eaf0425 100644
 --- a/src/AppBundle/Entity/User.php
 +++ b/src/AppBundle/Entity/User.php
-@@ -51,6 +51,11 @@ class User implements UserInterface
+@@ -56,6 +56,11 @@ class User implements UserInterface
       */
-     private $apiToken;
+     private $lastLoginTime;
  
 +    /**
 +     * @ORM\Column(type="string", length=50, nullable=true)
@@ -124,9 +124,9 @@ index baeeb95..6421105 100644
      public function __construct()
      {
          $this->apiToken = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
-@@ -136,4 +141,14 @@ class User implements UserInterface
+@@ -146,4 +151,14 @@ class User implements UserInterface
      {
-         $this->apiToken = $apiToken;
+         $this->lastLoginTime = $lastLoginTime;
      }
 +
 +    public function getFacebookId()

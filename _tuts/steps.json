@@ -96,6 +96,11 @@
             "description": null
         },
         {
+            "id": "formlogin-last-login-subscriber",
+            "name": "FormLogin: Last login subscriber",
+            "description": null
+        },
+        {
             "id": "facebook-install-libs",
             "name": "Facebook: Install libs",
             "description": null
@@ -116,5 +121,5 @@
             "description": null
         }
     ],
-    "sha": "08e222af796ae1f0412ae2960d89bea29d6880e9"
+    "sha": "c42a92646926d4251b2cd0d594917a55a7bd7441"
 }

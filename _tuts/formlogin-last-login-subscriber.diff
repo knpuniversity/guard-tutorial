@@ -1,0 +1,53 @@
+diff --git a/app/config/services.yml b/app/config/services.yml
+index 5dadd04..e10b621 100644
+--- a/app/config/services.yml
++++ b/app/config/services.yml
+@@ -11,3 +11,9 @@ services:
+     app.api_token_authenticator:
+         class: AppBundle\Security\ApiTokenAuthenticator
+         arguments: ["@doctrine.orm.entity_manager"]
++
++    app.last_login_subscriber:
++        class: AppBundle\EventListener\LastLoginSubscriber
++        arguments: ["@doctrine.orm.entity_manager"]
++        tags:
++            - { name: kernel.event_subscriber }
+diff --git a/src/AppBundle/EventListener/LastLoginSubscriber.php b/src/AppBundle/EventListener/LastLoginSubscriber.php
+new file mode 100644
+index 0000000..2d1b91f
+--- /dev/null
++++ b/src/AppBundle/EventListener/LastLoginSubscriber.php
+@@ -0,0 +1,33 @@
++<?php
++
++namespace AppBundle\EventListener;
++
++use AppBundle\Entity\User;
++use Doctrine\ORM\EntityManager;
++use Symfony\Component\EventDispatcher\EventSubscriberInterface;
++use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
++use Symfony\Component\Security\Http\SecurityEvents;
++
++class LastLoginSubscriber implements EventSubscriberInterface
++{
++    private $em;
++
++    public function __construct(EntityManager $em)
++    {
++        $this->em = $em;
++    }
++
++    public function onInteractiveLogin(InteractiveLoginEvent $event)
++    {
++        /** @var User $user */
++        $user = $event->getAuthenticationToken()->getUser();
++        $user->setLastLoginTime(new \DateTime());
++        $this->em->persist($user);
++        $this->em->flush($user);
++    }
++
++    public static function getSubscribedEvents()
++    {
++        return array(SecurityEvents::INTERACTIVE_LOGIN => 'onInteractiveLogin');
++    }
++}
