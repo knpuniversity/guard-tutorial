@@ -1,8 +1,8 @@
 diff --git a/src/AppBundle/Security/ApiTokenAuthenticator.php b/src/AppBundle/Security/ApiTokenAuthenticator.php
-index cd075a8..9855158 100644
+index cd075a8..4b7e808 100644
 --- a/src/AppBundle/Security/ApiTokenAuthenticator.php
 +++ b/src/AppBundle/Security/ApiTokenAuthenticator.php
-@@ -2,48 +2,76 @@
+@@ -2,48 +2,78 @@
  
  namespace AppBundle\Security;
  
@@ -49,7 +49,9 @@ index cd075a8..9855158 100644
      public function checkCredentials($credentials, UserInterface $user)
      {
 -        // TODO: Implement checkCredentials() method.
-+        // no need to check
++        // the fact that they had a valid token that *was* attached to a user
++        // means that their credentials are correct. So, there's nothing
++        // additional (like a password) to check here.
 +        return;
      }
  
