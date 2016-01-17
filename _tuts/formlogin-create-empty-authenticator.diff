@@ -1,6 +1,6 @@
 diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
 new file mode 100644
-index 0000000..634a782
+index 0000000..8cb5cac
 --- /dev/null
 +++ b/src/AppBundle/Security/FormLoginAuthenticator.php
 @@ -0,0 +1,36 @@
@@ -8,7 +8,7 @@ index 0000000..634a782
 +
 +namespace AppBundle\Security;
 +
-+use KnpU\Guard\Authenticator\AbstractFormLoginAuthenticator;
++use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 +use Symfony\Component\HttpFoundation\Request;
 +use Symfony\Component\Security\Core\User\UserInterface;
 +use Symfony\Component\Security\Core\User\UserProviderInterface;

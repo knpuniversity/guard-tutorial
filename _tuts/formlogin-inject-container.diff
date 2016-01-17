@@ -1,15 +1,16 @@
 diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
-index 634a782..41b43b6 100644
+index 8cb5cac..91e167f 100644
 --- a/src/AppBundle/Security/FormLoginAuthenticator.php
 +++ b/src/AppBundle/Security/FormLoginAuthenticator.php
-@@ -3,12 +3,20 @@
+@@ -2,6 +2,7 @@
+ 
  namespace AppBundle\Security;
  
- use KnpU\Guard\Authenticator\AbstractFormLoginAuthenticator;
 +use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
  use Symfony\Component\Security\Core\User\UserInterface;
- use Symfony\Component\Security\Core\User\UserProviderInterface;
+@@ -9,6 +10,13 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  
  class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
  {

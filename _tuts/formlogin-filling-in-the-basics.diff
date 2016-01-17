@@ -1,10 +1,10 @@
 diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
-index 41b43b6..ebbd4bd 100644
+index 91e167f..95231b3 100644
 --- a/src/AppBundle/Security/FormLoginAuthenticator.php
 +++ b/src/AppBundle/Security/FormLoginAuthenticator.php
 @@ -5,6 +5,9 @@ namespace AppBundle\Security;
- use KnpU\Guard\Authenticator\AbstractFormLoginAuthenticator;
  use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
 +use Symfony\Component\Routing\RouterInterface;
 +use Symfony\Component\Security\Core\Exception\BadCredentialsException;
@@ -12,7 +12,7 @@ index 41b43b6..ebbd4bd 100644
  use Symfony\Component\Security\Core\User\UserInterface;
  use Symfony\Component\Security\Core\User\UserProviderInterface;
  
-@@ -19,26 +22,46 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
+@@ -19,26 +22,47 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
  
      public function getCredentials(Request $request)
      {
@@ -45,9 +45,10 @@ index 41b43b6..ebbd4bd 100644
 +        $plainPassword = $credentials['password'];
 +        $encoder = $this->container->get('security.password_encoder');
 +        if (!$encoder->isPasswordValid($user, $plainPassword)) {
-+            // throw any AuthenticationException
-+            throw new BadCredentialsException();
++            return false;
 +        }
++
++        return true;
      }
  
      protected function getLoginUrl()

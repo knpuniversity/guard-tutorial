@@ -116,10 +116,15 @@
             "description": null
         },
         {
+            "id": "facebook-add-abstract-class",
+            "name": "Facebook: Add abstract class",
+            "description": null
+        },
+        {
             "id": "facebook-finish-registration",
             "name": "Facebook: Finish Registration",
             "description": null
         }
     ],
-    "sha": "6a877fa671ac37e9cf35be48cee5cd72cdeb9554"
+    "sha": "15f01e236e9ef6e0e9ab9f918e9f54f4159de1dd"
 }

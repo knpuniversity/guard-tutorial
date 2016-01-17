@@ -1,31 +1,22 @@
 diff --git a/composer.json b/composer.json
-index 5b55974..7ef9163 100644
+index 4edc9f9..9a24044 100644
 --- a/composer.json
 +++ b/composer.json
-@@ -21,7 +21,8 @@
+@@ -20,7 +20,8 @@
+         "sensio/distribution-bundle": "~4.0",
          "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
          "incenteev/composer-parameter-handler": "~2.0",
-         "doctrine/doctrine-fixtures-bundle": "^2.2",
--        "knpuniversity/guard-bundle": "~0.1@dev"
-+        "knpuniversity/guard-bundle": "~0.1@dev",
+-        "doctrine/doctrine-fixtures-bundle": "^2.2"
++        "doctrine/doctrine-fixtures-bundle": "^2.2",
 +        "guzzlehttp/guzzle": "~6.0"
      },
      "require-dev": {
          "sensio/generator-bundle": "~2.3"
 diff --git a/composer.lock b/composer.lock
-index c1e1b23..662eaf1 100644
+index ee20acf..a931bdb 100644
 --- a/composer.lock
 +++ b/composer.lock
-@@ -4,7 +4,7 @@
-         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
-         "This file is @generated automatically"
-     ],
--    "hash": "d5eb0eec3f337a27109be53d16780572",
-+    "hash": "1409e0788d9a54dc481baae36e51ce14",
-     "packages": [
-         {
-             "name": "doctrine/annotations",
-@@ -820,6 +820,177 @@
+@@ -821,6 +821,177 @@
              "time": "2014-12-16 13:45:01"
          },
          {
@@ -203,7 +194,7 @@ index c1e1b23..662eaf1 100644
              "name": "incenteev/composer-parameter-handler",
              "version": "v2.1.1",
              "source": {
-@@ -1154,6 +1325,55 @@
+@@ -1111,6 +1282,55 @@
              "time": "2015-03-09 09:58:04"
          },
          {
@@ -256,8 +247,8 @@ index c1e1b23..662eaf1 100644
 +            "time": "2015-05-04 20:22:00"
 +        },
 +        {
-             "name": "psr/log",
-             "version": "1.0.0",
+             "name": "paragonie/random_compat",
+             "version": "1.1.5",
              "source": {
 diff --git a/testAuth.php b/testAuth.php
 new file mode 100644

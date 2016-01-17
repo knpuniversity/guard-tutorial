@@ -1,6 +1,6 @@
 diff --git a/src/AppBundle/Security/ApiTokenAuthenticator.php b/src/AppBundle/Security/ApiTokenAuthenticator.php
 new file mode 100644
-index 0000000..cd075a8
+index 0000000..2774c5d
 --- /dev/null
 +++ b/src/AppBundle/Security/ApiTokenAuthenticator.php
 @@ -0,0 +1,49 @@
@@ -8,7 +8,7 @@ index 0000000..cd075a8
 +
 +namespace AppBundle\Security;
 +
-+use KnpU\Guard\AbstractGuardAuthenticator;
++use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 +use Symfony\Component\HttpFoundation\Request;
 +use Symfony\Component\HttpFoundation\Response;
 +use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;

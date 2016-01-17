@@ -1,6 +1,6 @@
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
 new file mode 100644
-index 0000000..f0a0435
+index 0000000..6816dfe
 --- /dev/null
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
 @@ -0,0 +1,48 @@
@@ -8,7 +8,7 @@ index 0000000..f0a0435
 +
 +namespace AppBundle\Security;
 +
-+use KnpU\Guard\AbstractGuardAuthenticator;
++use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 +use Symfony\Component\HttpFoundation\Request;
 +use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 +use Symfony\Component\Security\Core\Exception\AuthenticationException;

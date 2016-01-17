@@ -1,11 +1,11 @@
 diff --git a/app/config/security.yml b/app/config/security.yml
-index 9f38ef3..aa38c3d 100644
+index 9f38ef3..f4f78fa 100644
 --- a/app/config/security.yml
 +++ b/app/config/security.yml
 @@ -18,3 +18,6 @@ security:
  
          main:
              anonymous: ~
-+            knpu_guard:
++            guard:
 +                authenticators:
 +                    - app.form_login_authenticator

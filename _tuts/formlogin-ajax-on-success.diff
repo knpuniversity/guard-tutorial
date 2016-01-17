@@ -1,16 +1,16 @@
 diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
-index 7b6d1ab..d946211 100644
+index efe6487..d65e852 100644
 --- a/src/AppBundle/Security/FormLoginAuthenticator.php
 +++ b/src/AppBundle/Security/FormLoginAuthenticator.php
-@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
- use Symfony\Component\HttpFoundation\JsonResponse;
+@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
  use Symfony\Component\Routing\RouterInterface;
 +use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
  use Symfony\Component\Security\Core\Exception\AuthenticationException;
  use Symfony\Component\Security\Core\Exception\BadCredentialsException;
  use Symfony\Component\Security\Core\Security;
-@@ -83,6 +84,20 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
+@@ -84,6 +85,20 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
          return parent::onAuthenticationFailure($request, $exception);
      }
  

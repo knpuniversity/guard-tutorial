@@ -1,15 +1,15 @@
 diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
-index 525f8da..77a1011 100644
+index 277d6b9..6623768 100644
 --- a/src/AppBundle/Security/FormLoginAuthenticator.php
 +++ b/src/AppBundle/Security/FormLoginAuthenticator.php
-@@ -3,6 +3,7 @@
+@@ -2,6 +2,7 @@
+ 
  namespace AppBundle\Security;
  
- use KnpU\Guard\Authenticator\AbstractFormLoginAuthenticator;
-+use KnpU\Guard\Exception\CustomAuthenticationException;
++use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
  use Symfony\Component\DependencyInjection\ContainerInterface;
+ use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
- use Symfony\Component\Routing\RouterInterface;
 @@ -39,6 +40,14 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
      public function getUser($credentials, UserProviderInterface $userProvider)
      {
@@ -17,7 +17,7 @@ index 525f8da..77a1011 100644
 +
 +        // a silly example of failing with a custom message
 +        if ($username == 'rails_troll') {
-+            throw CustomAuthenticationException::createWithSafeMessage(
++            throw new CustomUserMessageAuthenticationException(
 +                'Get outta here rails_troll - we don\'t like you!'
 +            );
 +        }

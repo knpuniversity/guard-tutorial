@@ -28,7 +28,7 @@ index d014ebc..568857f 100644
 +    }
  }
 diff --git a/src/AppBundle/Security/FormLoginAuthenticator.php b/src/AppBundle/Security/FormLoginAuthenticator.php
-index ebbd4bd..525f8da 100644
+index 95231b3..277d6b9 100644
 --- a/src/AppBundle/Security/FormLoginAuthenticator.php
 +++ b/src/AppBundle/Security/FormLoginAuthenticator.php
 @@ -39,8 +39,12 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator

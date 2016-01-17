@@ -1,5 +1,5 @@
 diff --git a/src/AppBundle/Security/ApiTokenAuthenticator.php b/src/AppBundle/Security/ApiTokenAuthenticator.php
-index cd075a8..4b7e808 100644
+index 2774c5d..cc7a23a 100644
 --- a/src/AppBundle/Security/ApiTokenAuthenticator.php
 +++ b/src/AppBundle/Security/ApiTokenAuthenticator.php
 @@ -2,48 +2,78 @@
@@ -7,8 +7,8 @@ index cd075a8..4b7e808 100644
  namespace AppBundle\Security;
  
 +use Doctrine\ORM\EntityManager;
- use KnpU\Guard\AbstractGuardAuthenticator;
 +use Symfony\Component\HttpFoundation\JsonResponse;
+ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
  use Symfony\Component\HttpFoundation\Response;
  use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -52,7 +52,7 @@ index cd075a8..4b7e808 100644
 +        // the fact that they had a valid token that *was* attached to a user
 +        // means that their credentials are correct. So, there's nothing
 +        // additional (like a password) to check here.
-+        return;
++        return true;
      }
  
      public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
