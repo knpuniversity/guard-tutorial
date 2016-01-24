@@ -48,10 +48,10 @@ index 886c92b..2833651 100644
 +    facebook_app_id:  XXXX
 +    facebook_app_secret: XXXX
 diff --git a/app/config/security.yml b/app/config/security.yml
-index 20dd300..ec1563c 100644
+index f1a8f1f..3ab12ae 100644
 --- a/app/config/security.yml
 +++ b/app/config/security.yml
-@@ -22,5 +22,6 @@ security:
+@@ -23,5 +23,6 @@ security:
                  authenticators:
                      - app.form_login_authenticator
                      - app.api_token_authenticator
@@ -147,7 +147,7 @@ index 53297e6..eaf0425 100644
 +    }
  }
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index 6816dfe..70f4de3 100644
+index 6816dfe..caa81ca 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
 @@ -2,6 +2,17 @@
@@ -168,7 +168,7 @@ index 6816dfe..70f4de3 100644
  use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
  use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-@@ -11,38 +22,152 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
+@@ -11,38 +22,153 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  
  class FacebookAuthenticator extends AbstractGuardAuthenticator
  {
@@ -273,6 +273,7 @@ index 6816dfe..70f4de3 100644
      public function checkCredentials($credentials, UserInterface $user)
      {
 -        // todo
++        return true;
 +        // do nothing - the fact that the access token worked means that
 +        // our app has been authorized with Facebook
      }

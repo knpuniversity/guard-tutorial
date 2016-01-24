@@ -51,6 +51,11 @@
             "description": null
         },
         {
+            "id": "formlogin-add-logout",
+            "name": "FormLogin: Add logout",
+            "description": null
+        },
+        {
             "id": "apitoken-creating-empty-apitokenauthenticator",
             "name": "ApiToken: Creating empty ApiTokenAuthenticator",
             "description": null
@@ -126,5 +131,5 @@
             "description": null
         }
     ],
-    "sha": "930c131e2318b1274062ad05a0ce49e1a1f4e354"
+    "sha": "66386c87b6356f579085d0d34086ebedf8108625"
 }

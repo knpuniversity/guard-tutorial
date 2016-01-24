@@ -165,7 +165,7 @@ index 0000000..1ce79ae
 +    }
 +}
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index 70f4de3..dc8407f 100644
+index caa81ca..dc8407f 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
 @@ -4,23 +4,20 @@ namespace AppBundle\Security;
@@ -266,12 +266,13 @@ index 70f4de3..dc8407f 100644
          $email = $facebookUser->getEmail();
  
          // 1) have they logged in with Facebook before? Easy!
-@@ -118,12 +96,6 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
+@@ -118,13 +96,6 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
          return $user;
      }
  
 -    public function checkCredentials($credentials, UserInterface $user)
 -    {
+-        return true;
 -        // do nothing - the fact that the access token worked means that
 -        // our app has been authorized with Facebook
 -    }

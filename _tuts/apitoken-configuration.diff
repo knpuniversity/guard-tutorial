@@ -1,8 +1,8 @@
 diff --git a/app/config/security.yml b/app/config/security.yml
-index f4f78fa..20dd300 100644
+index 8185402..f1a8f1f 100644
 --- a/app/config/security.yml
 +++ b/app/config/security.yml
-@@ -21,3 +21,6 @@ security:
+@@ -22,3 +22,6 @@ security:
              guard:
                  authenticators:
                      - app.form_login_authenticator
