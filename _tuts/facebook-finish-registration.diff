@@ -122,49 +122,88 @@ index 0000000..b3da268
 +        return 'app_bundle_user_registration_type';
 +    }
 +}
-diff --git a/src/AppBundle/OAuth/FinishFacebookRegistrationException.php b/src/AppBundle/OAuth/FinishFacebookRegistrationException.php
+diff --git a/src/AppBundle/OAuth/FinishRegistrationException.php b/src/AppBundle/OAuth/FinishRegistrationException.php
 new file mode 100644
-index 0000000..c768f46
+index 0000000..a806256
 --- /dev/null
-+++ b/src/AppBundle/OAuth/FinishFacebookRegistrationException.php
-@@ -0,0 +1,24 @@
++++ b/src/AppBundle/OAuth/FinishRegistrationException.php
+@@ -0,0 +1,41 @@
 +<?php
 +
 +namespace AppBundle\OAuth;
 +
 +use Exception;
-+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 +use Symfony\Component\Security\Core\Exception\AuthenticationException;
 +
-+class FinishFacebookRegistrationException extends AuthenticationException
++class FinishRegistrationException extends AuthenticationException
 +{
-+    private $facebookUser;
++    private $userInformation;
 +
-+    public function __construct(ResourceOwnerInterface $facebookUser, $message = "", $code = 0, Exception $previous = null)
++    /**
++     * @param mixed         $userInfo Any info to be used to help registration
++     * @param string        $message
++     * @param integer       $code
++     * @param \Exception    $previous
++     */
++    public function __construct($userInfo, $message = "", $code = 0, Exception $previous = null)
 +    {
-+        $this->facebookUser = $facebookUser;
++        $this->userInformation = $userInfo;
 +
 +        parent::__construct($message, $code, $previous);
 +    }
 +
-+    public function getFacebookUser()
++    public function getUserInformation()
 +    {
-+        return $this->facebookUser;
++        return $this->userInformation;
++    }
++
++    /**
++     * This method should *not* be called normally. The purpose
++     * of this exception is to be a "flag" for code that will
++     * redirect the user to some "finish registration" page. If
++     * this message is shown to your user, then you're missing
++     * this piece of your code.
++     */
++    public function getMessageKey()
++    {
++        return 'You need to finish registration to login.';
 +    }
 +}
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index dc8407f..0842a99 100644
+index 3472d80..aff9dc9 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
-@@ -3,6 +3,7 @@
+@@ -3,18 +3,18 @@
  namespace AppBundle\Security;
  
  use AppBundle\Entity\User;
-+use AppBundle\OAuth\FinishFacebookRegistrationException;
++use AppBundle\OAuth\FinishRegistrationException;
++use AppBundle\Security\Helper\FinishRegistrationBehavior;
+ use AppBundle\Security\Helper\SaveAuthFailureMessage;
+-use AppBundle\Security\Helper\RedirectToLoginWhenAnonymous;
+ use AppBundle\Security\Helper\PreviousUrlHelper;
  use Doctrine\ORM\EntityManager;
- use League\OAuth2\Client\Provider\AbstractProvider;
  use League\OAuth2\Client\Provider\ResourceOwnerInterface;
-@@ -77,15 +78,10 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
+ use League\OAuth2\Client\Token\AccessToken;
+ use League\OAuth2\Client\Provider\Facebook;
+ use League\OAuth2\Client\Provider\FacebookUser;
+-use Symfony\Component\HttpFoundation\RedirectResponse;
+-use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\Routing\RouterInterface;
+ use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\HttpFoundation\RedirectResponse;
+ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+ use Symfony\Component\Security\Core\Exception\AuthenticationException;
+ 
+@@ -22,6 +22,7 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
+ {
+     use PreviousUrlHelper;
+     use SaveAuthFailureMessage;
++    use FinishRegistrationBehavior;
+ 
+     private $facebook;
+     private $em;
+@@ -61,15 +62,10 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
          $user = $this->em->getRepository('AppBundle:User')
                      ->findOneBy(array('email' => $email));
  
@@ -179,24 +218,68 @@ index dc8407f..0842a99 100644
 -            // to login with any password
 -            $user->setPassword('no password');
 +            // throw a special exception we created - see onAuthenticaitonFailure
-+            throw new FinishFacebookRegistrationException($facebookUser);
++            throw new FinishRegistrationException($facebookUser);
          }
  
          // make sure the Facebook user is set
-@@ -98,6 +94,16 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
+@@ -96,6 +92,12 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
  
      public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
      {
-+        if ($exception instanceof FinishFacebookRegistrationException) {
-+            // actually, we just need to redirect to finish registration
-+            $request->getSession()->set('facebook_user', $exception->getFacebookUser());
++        if ($this->requiresFinishRegistration($exception)) {
++            $registrationUrl = $this->router->generate('connect_facebook_registration');
 +
-+            $url = $this->container->get('router')
-+                ->generate('connect_facebook_registration');
-+
-+            return new RedirectResponse($url);
++            return $this->sendToFinishRegistration($registrationUrl, $request, $exception);
 +        }
 +
-         // this would happen if something went wrong in the OAuth flow
-         $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+         $this->saveAuthenticationErrorToSession($request, $exception);
  
+         $loginUrl = $this->router->generate('security_login');
+diff --git a/src/AppBundle/Security/Helper/FinishRegistrationBehavior.php b/src/AppBundle/Security/Helper/FinishRegistrationBehavior.php
+new file mode 100644
+index 0000000..3d233c1
+--- /dev/null
++++ b/src/AppBundle/Security/Helper/FinishRegistrationBehavior.php
+@@ -0,0 +1,42 @@
++<?php
++
++namespace AppBundle\Security\Helper;
++
++use AppBundle\OAuth\FinishRegistrationException;
++use Symfony\Component\HttpFoundation\RedirectResponse;
++use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\Security\Core\Exception\AuthenticationException;
++
++/**
++ * Use this trait if sometimes your authenticator requires people
++ * to "finish registration" before logging in.
++ */
++trait FinishRegistrationBehavior
++{
++    /**
++     * Should we send the user to finish registration?
++     *
++     * @param AuthenticationException $e
++     * @return bool
++     */
++    protected function requiresFinishRegistration(AuthenticationException $e)
++    {
++        return $e instanceof FinishRegistrationException;
++    }
++
++    /**
++     * Call this from within your onAuthenticationFailure() method.
++     *
++     * @param string $registrationUrl
++     * @param Request $request
++     * @param FinishRegistrationException $e
++     * @return RedirectResponse
++     */
++    protected function sendToFinishRegistration($registrationUrl, Request $request, FinishRegistrationException $e)
++    {
++        // save the user information!
++        $request->getSession()->set('guard.finish_registration.user_information', $e->getUserInformation());
++
++        return new RedirectResponse($registrationUrl);
++    }
++}

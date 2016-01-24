@@ -59,20 +59,17 @@ index f1a8f1f..3ab12ae 100644
                  # by default, use the start() function from FormLoginAuthenticator
                  entry_point: app.form_login_authenticator
 diff --git a/app/config/services.yml b/app/config/services.yml
-index e10b621..13394c8 100644
+index e10b621..4884a2b 100644
 --- a/app/config/services.yml
 +++ b/app/config/services.yml
-@@ -17,3 +17,10 @@ services:
+@@ -17,3 +17,7 @@ services:
          arguments: ["@doctrine.orm.entity_manager"]
          tags:
              - { name: kernel.event_subscriber }
 +
 +    app.facebook_authenticator:
 +        class: AppBundle\Security\FacebookAuthenticator
-+        arguments:
-+            - @knpu.oauth2.my_facebook_client
-+            - @doctrine.orm.entity_manager
-+            - @router
++        autowire: true
 diff --git a/src/AppBundle/Controller/FacebookConnectController.php b/src/AppBundle/Controller/FacebookConnectController.php
 new file mode 100644
 index 0000000..ee56036

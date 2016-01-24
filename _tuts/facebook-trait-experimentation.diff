@@ -1,0 +1,157 @@
+diff --git a/src/AppBundle/Security/AbstractSocialAuthenticator.php b/src/AppBundle/Security/AbstractSocialAuthenticator.php
+index cc5f162..dbe373f 100644
+--- a/src/AppBundle/Security/AbstractSocialAuthenticator.php
++++ b/src/AppBundle/Security/AbstractSocialAuthenticator.php
+@@ -164,4 +164,9 @@ abstract class AbstractSocialAuthenticator extends AbstractGuardAuthenticator
+             )
+         );
+     }
++
++    public function supportsRememberMe()
++    {
++        return true;
++    }
+ }
+diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
+index b04f5b2..3472d80 100644
+--- a/src/AppBundle/Security/FacebookAuthenticator.php
++++ b/src/AppBundle/Security/FacebookAuthenticator.php
+@@ -3,22 +3,26 @@
+ namespace AppBundle\Security;
+ 
+ use AppBundle\Entity\User;
++use AppBundle\Security\Helper\SaveAuthFailureMessage;
++use AppBundle\Security\Helper\RedirectToLoginWhenAnonymous;
++use AppBundle\Security\Helper\PreviousUrlHelper;
+ use Doctrine\ORM\EntityManager;
+-use League\OAuth2\Client\Provider\AbstractProvider;
+ use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+ use League\OAuth2\Client\Token\AccessToken;
+ use League\OAuth2\Client\Provider\Facebook;
+ use League\OAuth2\Client\Provider\FacebookUser;
+ use Symfony\Component\HttpFoundation\RedirectResponse;
++use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\Routing\RouterInterface;
+-use Symfony\Component\Security\Core\Security;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+ use Symfony\Component\Security\Core\Exception\AuthenticationException;
+-use Symfony\Component\Security\Core\User\UserInterface;
+ 
+ class FacebookAuthenticator extends AbstractSocialAuthenticator
+ {
++    use PreviousUrlHelper;
++    use SaveAuthFailureMessage;
++
+     private $facebook;
+     private $em;
+     private $router;
+@@ -76,42 +80,31 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
+         return $user;
+     }
+ 
+-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
++    protected function getLoginUrl()
+     {
+-        // this would happen if something went wrong in the OAuth flow
+-        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+-
+-        $url = $this->router
+-            ->generate('security_login');
+-
+-        return new RedirectResponse($url);
++        return $this->router->generate('security_login');
+     }
+ 
+     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+     {
+-        // todo - remove needing this crazy thing
+-        $targetPath = $request->getSession()->get('_security.'.$providerKey.'.target_path');
+-
+-        if (!$targetPath) {
+-            $router = $this->router;
+-            $targetPath = $router->generate('homepage');
++        if (!$url = $this->getPreviousUrl($request, $providerKey)) {
++            $url = $this->router->generate('homepage');
+         }
+ 
+-        return new RedirectResponse($targetPath);
++        return new RedirectResponse($url);
+     }
+ 
+-    public function supportsRememberMe()
++    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+     {
+-        return true;
++        $this->saveAuthenticationErrorToSession($request, $exception);
++
++        $loginUrl = $this->router->generate('security_login');
++        return new RedirectResponse($loginUrl);
+     }
+ 
+     public function start(Request $request, AuthenticationException $authException = null)
+     {
+-        // not called in our app, but if it were, redirecting to the
+-        // login page makes sense
+-        $url = $this->router
+-            ->generate('security_login');
+-
+-        return new RedirectResponse($url);
++        // redirect to the login page when accessing a secure URL
++        return $this->router->generate('security_login');
+     }
+ }
+diff --git a/src/AppBundle/Security/Helper/PreviousUrlHelper.php b/src/AppBundle/Security/Helper/PreviousUrlHelper.php
+new file mode 100644
+index 0000000..b79eb49
+--- /dev/null
++++ b/src/AppBundle/Security/Helper/PreviousUrlHelper.php
+@@ -0,0 +1,25 @@
++<?php
++
++namespace AppBundle\Security\Helper;
++
++use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\HttpFoundation\RedirectResponse;
++use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
++
++trait PreviousUrlHelper
++{
++    /**
++     * Returns the URL (if any) the user visited that forced them to login.
++     *
++     * @param Request        $request
++     * @param string         $providerKey
++     *
++     * @return string
++     */
++    public function getPreviousUrl(Request $request, $providerKey)
++    {
++        // if the user hit a secure page and start() was called, this was
++        // the URL they were on, and probably where you want to redirect to
++        return $request->getSession()->get('_security.'.$providerKey.'.target_path');
++    }
++}
+diff --git a/src/AppBundle/Security/Helper/SaveAuthFailureMessage.php b/src/AppBundle/Security/Helper/SaveAuthFailureMessage.php
+new file mode 100644
+index 0000000..6b01fcf
+--- /dev/null
++++ b/src/AppBundle/Security/Helper/SaveAuthFailureMessage.php
+@@ -0,0 +1,17 @@
++<?php
++
++namespace AppBundle\Security\Helper;
++
++use Symfony\Component\HttpFoundation\Request;
++use Symfony\Component\HttpFoundation\RedirectResponse;
++use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
++use Symfony\Component\Security\Core\Exception\AuthenticationException;
++use Symfony\Component\Security\Core\Security;
++
++trait SaveAuthFailureMessage
++{
++    protected function saveAuthenticationErrorToSession(Request $request, AuthenticationException $exception)
++    {
++        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
++    }
++}

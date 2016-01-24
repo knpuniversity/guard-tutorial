@@ -126,10 +126,15 @@
             "description": null
         },
         {
+            "id": "facebook-trait-experimentation",
+            "name": "Facebook: Trait experimentation",
+            "description": null
+        },
+        {
             "id": "facebook-finish-registration",
             "name": "Facebook: Finish Registration",
             "description": null
         }
     ],
-    "sha": "66386c87b6356f579085d0d34086ebedf8108625"
+    "sha": "f3e94a3fa403b54071ae036343aae288aff32601"
 }

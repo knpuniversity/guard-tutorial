@@ -1,9 +1,9 @@
 diff --git a/src/AppBundle/Security/AbstractSocialAuthenticator.php b/src/AppBundle/Security/AbstractSocialAuthenticator.php
 new file mode 100644
-index 0000000..1ce79ae
+index 0000000..cc5f162
 --- /dev/null
 +++ b/src/AppBundle/Security/AbstractSocialAuthenticator.php
-@@ -0,0 +1,160 @@
+@@ -0,0 +1,167 @@
 +<?php
 +
 +namespace AppBundle\Security;
@@ -68,6 +68,13 @@ index 0000000..1ce79ae
 +     */
 +    abstract protected function getUserFromResourceOwner(ResourceOwnerInterface $resourceOwner, AccessToken $accessToken);
 +
++    /**
++     * Automatically looks for the ?code query parameter after
++     * being redirected back (if we should look for that on this URL).
++     *
++     * @param Request $request
++     * @return mixed|null
++     */
 +    public function getCredentials(Request $request)
 +    {
 +        if (!$this->shouldAttemptAuthentication($request)) {
@@ -165,10 +172,10 @@ index 0000000..1ce79ae
 +    }
 +}
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index caa81ca..dc8407f 100644
+index caa81ca..b04f5b2 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
-@@ -4,23 +4,20 @@ namespace AppBundle\Security;
+@@ -4,35 +4,23 @@ namespace AppBundle\Security;
  
  use AppBundle\Entity\User;
  use Doctrine\ORM\EntityManager;
@@ -194,16 +201,25 @@ index caa81ca..dc8407f 100644
 -class FacebookAuthenticator extends AbstractGuardAuthenticator
 +class FacebookAuthenticator extends AbstractSocialAuthenticator
  {
-     /**
-      * @var Facebook
-@@ -42,50 +39,31 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
+-    /**
+-     * @var Facebook
+-     */
+     private $facebook;
+-    /**
+-     * @var EntityManager
+-     */
+     private $em;
+-    /**
+-     * @var RouterInterface
+-     */
+     private $router;
+ 
+     public function __construct(Facebook $facebook, EntityManager $em, RouterInterface $router)
+@@ -42,50 +30,20 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
          $this->router = $router;
      }
  
 -    public function getCredentials(Request $request)
-+    /**
-+     * @return AbstractProvider
-+     */
 +    protected function getOAuth2Provider()
      {
 -        if ($request->getPathInfo() != '/connect/facebook-check') {
@@ -225,9 +241,6 @@ index caa81ca..dc8407f 100644
      }
  
 -    public function getUser($authorizationCode, UserProviderInterface $userProvider)
-+    /**
-+     * @return bool Return true if we should try to authenticate
-+     */
 +    protected function shouldAttemptAuthentication(Request $request)
      {
 -        try {
@@ -253,11 +266,6 @@ index caa81ca..dc8407f 100644
 +        return $request->getPathInfo() == '/connect/facebook-check';
 +    }
  
-+    /**
-+     * @param ResourceOwnerInterface $resourceOwner
-+     * @param AccessToken $accessToken
-+     * @return UserInterface
-+     */
 +    protected function getUserFromResourceOwner(ResourceOwnerInterface $resourceOwner, AccessToken $accessToken)
 +    {
          /** @var FacebookUser $facebookUser */
@@ -266,7 +274,7 @@ index caa81ca..dc8407f 100644
          $email = $facebookUser->getEmail();
  
          // 1) have they logged in with Facebook before? Easy!
-@@ -118,13 +96,6 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
+@@ -118,13 +76,6 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
          return $user;
      }
  
@@ -280,3 +288,18 @@ index caa81ca..dc8407f 100644
      public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
      {
          // this would happen if something went wrong in the OAuth flow
+@@ -154,14 +105,6 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
+         return true;
+     }
+ 
+-    /**
+-     * Called when an anonymous user tries to access an protected page.
+-     *
+-     * In our app, this is never actually called, because there is only *one*
+-     * "entry_point" per firewall and in security.yml, we're using
+-     * app.form_login_authenticator as the entry point (so it's start() method
+-     * is the one that's called).
+-     */
+     public function start(Request $request, AuthenticationException $authException = null)
+     {
+         // not called in our app, but if it were, redirecting to the
