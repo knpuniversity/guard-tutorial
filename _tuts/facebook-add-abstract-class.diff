@@ -1,9 +1,9 @@
 diff --git a/src/AppBundle/Security/AbstractSocialAuthenticator.php b/src/AppBundle/Security/AbstractSocialAuthenticator.php
 new file mode 100644
-index 0000000..3237790
+index 0000000..1ce79ae
 --- /dev/null
 +++ b/src/AppBundle/Security/AbstractSocialAuthenticator.php
-@@ -0,0 +1,156 @@
+@@ -0,0 +1,160 @@
 +<?php
 +
 +namespace AppBundle\Security;
@@ -156,12 +156,16 @@ index 0000000..3237790
 +        $message = $response['error']['message'];
 +
 +        throw new CustomUserMessageAuthenticationException(
-+            'There was an accessing your account. Please try again'
++            sprintf(
++                'There was an accessing your account: code %s, message %s',
++                $errorCode,
++                $message
++            )
 +        );
 +    }
 +}
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index e23c042..dc8407f 100644
+index 70f4de3..dc8407f 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
 @@ -4,23 +4,20 @@ namespace AppBundle\Security;
@@ -192,7 +196,7 @@ index e23c042..dc8407f 100644
  {
      /**
       * @var Facebook
-@@ -42,46 +39,31 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
+@@ -42,50 +39,31 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
          $this->router = $router;
      }
  
@@ -239,7 +243,11 @@ index e23c042..dc8407f 100644
 -            $message = $response['error']['message'];
 -
 -            throw new CustomUserMessageAuthenticationException(
--                'There was an error logging you into Facebook - code '.$errorCode
+-                sprintf(
+-                    'There was an error logging you into Facebook - code %s, message %s',
+-                    $errorCode,
+-                    $message
+-                )
 -            );
 -        }
 +        return $request->getPathInfo() == '/connect/facebook-check';
@@ -258,7 +266,7 @@ index e23c042..dc8407f 100644
          $email = $facebookUser->getEmail();
  
          // 1) have they logged in with Facebook before? Easy!
-@@ -114,12 +96,6 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
+@@ -118,12 +96,6 @@ class FacebookAuthenticator extends AbstractGuardAuthenticator
          return $user;
      }
  

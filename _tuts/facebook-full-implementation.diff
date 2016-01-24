@@ -11,7 +11,7 @@ index 0d5b3a4..23720ac 100644
      </form>
  {% endblock %}
 diff --git a/app/config/config.yml b/app/config/config.yml
-index b4a2d0a..3b26c6c 100644
+index b4a2d0a..6d0d701 100644
 --- a/app/config/config.yml
 +++ b/app/config/config.yml
 @@ -78,3 +78,12 @@ swiftmailer:
@@ -25,7 +25,7 @@ index b4a2d0a..3b26c6c 100644
 +            type: facebook
 +            client_id: %facebook_app_id%
 +            client_secret: %facebook_app_secret%
-+            graph_api_version: 2.3
++            graph_api_version: v2.3
 +            redirect_route: connect_facebook_check
 diff --git a/app/config/parameters.yml b/app/config/parameters.yml
 index f5e0347..dd86a8a 100644
@@ -147,7 +147,7 @@ index 53297e6..eaf0425 100644
 +    }
  }
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index 6816dfe..e23c042 100644
+index 6816dfe..70f4de3 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
 @@ -2,6 +2,17 @@
@@ -168,7 +168,7 @@ index 6816dfe..e23c042 100644
  use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
  use Symfony\Component\HttpFoundation\Request;
  use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-@@ -11,38 +22,148 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
+@@ -11,38 +22,152 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  
  class FacebookAuthenticator extends AbstractGuardAuthenticator
  {
@@ -228,7 +228,11 @@ index 6816dfe..e23c042 100644
 +            $message = $response['error']['message'];
 +
 +            throw new CustomUserMessageAuthenticationException(
-+                'There was an error logging you into Facebook - code '.$errorCode
++                sprintf(
++                    'There was an error logging you into Facebook - code %s, message %s',
++                    $errorCode,
++                    $message
++                )
 +            );
 +        }
 +
