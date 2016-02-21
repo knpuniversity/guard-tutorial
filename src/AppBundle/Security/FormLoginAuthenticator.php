@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Security;
@@ -82,6 +83,20 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
 
         // for non-AJAX requests, return the normal redirect
         return parent::onAuthenticationFailure($request, $exception);
+    }
+
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    {
+        // AJAX! Return some JSON
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(
+                // maybe send back the user's id
+                array('userId' => $token->getUser()->getId())
+            );
+        }
+
+        // for non-AJAX requests, return the normal redirect
+        return parent::onAuthenticationSuccess($request, $token, $providerKey);
     }
 
     protected function getLoginUrl()
