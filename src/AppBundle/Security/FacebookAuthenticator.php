@@ -4,25 +4,26 @@ namespace AppBundle\Security;
 
 use AppBundle\Entity\User;
 use Doctrine\ORM\EntityManager;
-use KnpU\OAuth2ClientBundle\Client\Provider\FacebookClient;
+use KnpU\OAuth2ClientBundle\Security\Helper\PreviousUrlHelper;
+use KnpU\OAuth2ClientBundle\Security\Helper\SaveAuthFailureMessage;
 use League\OAuth2\Client\Token\AccessToken;
-use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Facebook;
-use League\OAuth2\Client\Provider\FacebookUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\Security;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use KnpU\OAuth2ClientBundle\Client\Provider\FacebookClient;
 
 class FacebookAuthenticator extends SocialAuthenticator
 {
+    use PreviousUrlHelper;
+    use SaveAuthFailureMessage;
+
     /**
      * @var Facebook
      */
@@ -105,26 +106,19 @@ class FacebookAuthenticator extends SocialAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        // this would happen if something went wrong in the OAuth flow
-        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+        $this->saveAuthenticationErrorToSession($request, $exception);
 
-        $url = $this->router
-            ->generate('security_login');
-
-        return new RedirectResponse($url);
+        $loginUrl = $this->router->generate('security_login');
+        return new RedirectResponse($loginUrl);
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        // todo - remove needing this crazy thing
-        $targetPath = $request->getSession()->get('_security.'.$providerKey.'.target_path');
-
-        if (!$targetPath) {
-            $router = $this->router;
-            $targetPath = $router->generate('homepage');
+        if (!$url = $this->getPreviousUrl($request, $providerKey)) {
+            $url = $this->router->generate('homepage');
         }
 
-        return new RedirectResponse($targetPath);
+        return new RedirectResponse($url);
     }
 
     /**
