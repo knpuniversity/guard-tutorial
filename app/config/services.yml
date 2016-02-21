@@ -11,3 +11,9 @@ services:
     app.api_token_authenticator:
         class: AppBundle\Security\ApiTokenAuthenticator
         arguments: ["@doctrine.orm.entity_manager"]
+
+    app.last_login_subscriber:
+        class: AppBundle\EventListener\LastLoginSubscriber
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: kernel.event_subscriber }
