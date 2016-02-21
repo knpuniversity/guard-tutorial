@@ -21,7 +21,9 @@
         "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
         "incenteev/composer-parameter-handler": "~2.0",
         "doctrine/doctrine-fixtures-bundle": "^2.2",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "league/oauth2-facebook": "^1.1.0",
+        "knpuniversity/oauth2-client-bundle": "^1.0.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "~2.3"
