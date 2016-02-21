@@ -2,6 +2,7 @@
 
 namespace AppBundle\Security;
 
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,6 +40,14 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $username = $credentials['username'];
+
+        // a silly example of failing with a custom message
+        if ($username == 'rails_troll') {
+            throw new CustomUserMessageAuthenticationException(
+                'Get outta here rails_troll - we don\'t like you!'
+            );
+        }
+
         $userRepo = $this->container
             ->get('doctrine')
             ->getManager()
