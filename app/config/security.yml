@@ -18,6 +18,7 @@ security:
 
         main:
             anonymous: ~
+            logout: ~
             guard:
                 authenticators:
                     - app.form_login_authenticator
