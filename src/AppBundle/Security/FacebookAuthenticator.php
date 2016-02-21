@@ -3,12 +3,15 @@
 namespace AppBundle\Security;
 
 use AppBundle\Entity\User;
+use KnpU\OAuth2ClientBundle\Security\Exception\FinishRegistrationException;
+use KnpU\OAuth2ClientBundle\Security\Helper\FinishRegistrationBehavior;
 use Doctrine\ORM\EntityManager;
 use KnpU\OAuth2ClientBundle\Security\Helper\PreviousUrlHelper;
 use KnpU\OAuth2ClientBundle\Security\Helper\SaveAuthFailureMessage;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\Facebook;
+use League\OAuth2\Client\Provider\FacebookUser;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
@@ -23,6 +26,7 @@ class FacebookAuthenticator extends SocialAuthenticator
 {
     use PreviousUrlHelper;
     use SaveAuthFailureMessage;
+    use FinishRegistrationBehavior;
 
     /**
      * @var Facebook
@@ -78,15 +82,10 @@ class FacebookAuthenticator extends SocialAuthenticator
         $user = $this->em->getRepository('AppBundle:User')
                     ->findOneBy(array('email' => $email));
 
-        // 3) no user? Perhaps you just want to create one
-        //      or maybe you want to redirect to a registration (in that case, keep reading_
+        // 3) no user? Redirect to finish registration
         if (!$user) {
-            $user = new User();
-            $user->setUsername($email);
-            $user->setEmail($email);
-            // set an un-encoded password, which basically makes it *not* possible
-            // to login with any password
-            $user->setPassword('no password');
+            // throw a special exception we created - see onAuthenticaitonFailure
+            throw new FinishRegistrationException($facebookUser);
         }
 
         // make sure the Facebook user is set
@@ -106,6 +105,13 @@ class FacebookAuthenticator extends SocialAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
+        if ($exception instanceof FinishRegistrationException) {
+            $this->saveUserInfoToSession($request, $exception);
+
+            $registrationUrl = $this->router->generate('connect_facebook_registration');
+            return new RedirectResponse($registrationUrl);
+        }
+
         $this->saveAuthenticationErrorToSession($request, $exception);
 
         $loginUrl = $this->router->generate('security_login');
