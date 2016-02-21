@@ -11,6 +11,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -24,4 +25,16 @@ use Doctrine\ORM\EntityRepository;
  */
 class UserRepository extends EntityRepository
 {
+    /**
+     * @param string $username
+     * @return User
+     */
+    public function findByUsernameOrEmail($username)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.username = :username OR u.email = :username')
+            ->setParameter('username', $username)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

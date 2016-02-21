@@ -39,8 +39,12 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $username = $credentials['username'];
+        $userRepo = $this->container
+            ->get('doctrine')
+            ->getManager()
+            ->getRepository('AppBundle:User');
 
-        return $userProvider->loadUserByUsername($username);
+        return $userRepo->findByUsernameOrEmail($username);
     }
 
     public function checkCredentials($credentials, UserInterface $user)
