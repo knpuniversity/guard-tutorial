@@ -13,7 +13,7 @@ index 4edc9f9..9a24044 100644
      "require-dev": {
          "sensio/generator-bundle": "~2.3"
 diff --git a/composer.lock b/composer.lock
-index ee20acf..a931bdb 100644
+index 65bab9a..c2a77da 100644
 --- a/composer.lock
 +++ b/composer.lock
 @@ -821,6 +821,177 @@
@@ -248,7 +248,7 @@ index ee20acf..a931bdb 100644
 +        },
 +        {
              "name": "paragonie/random_compat",
-             "version": "1.1.5",
+             "version": "v1.2.0",
              "source": {
 diff --git a/testAuth.php b/testAuth.php
 new file mode 100644

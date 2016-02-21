@@ -134,7 +134,12 @@
             "id": "facebook-finish-registration",
             "name": "Facebook: Finish Registration",
             "description": null
+        },
+        {
+            "id": "facebook-use-state",
+            "name": "Facebook: Use state",
+            "description": null
         }
     ],
-    "sha": "f3e94a3fa403b54071ae036343aae288aff32601"
+    "sha": "45f19ad66aed4b1666ef0743b5c7a1783bc0a882"
 }

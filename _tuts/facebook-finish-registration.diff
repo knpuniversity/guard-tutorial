@@ -14,7 +14,7 @@ index 0000000..af752a5
 +    {{ form_end(form) }}
 +{% endblock %}
 diff --git a/src/AppBundle/Controller/FacebookConnectController.php b/src/AppBundle/Controller/FacebookConnectController.php
-index ee56036..cf76088 100644
+index c1819fc..f808750 100644
 --- a/src/AppBundle/Controller/FacebookConnectController.php
 +++ b/src/AppBundle/Controller/FacebookConnectController.php
 @@ -2,6 +2,9 @@
@@ -27,7 +27,7 @@ index ee56036..cf76088 100644
  use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
  use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  use Symfony\Component\HttpFoundation\Request;
-@@ -33,4 +36,51 @@ class FacebookConnectController extends Controller
+@@ -31,4 +34,51 @@ class FacebookConnectController extends Controller
      {
          // will not be reached!
      }
@@ -37,9 +37,9 @@ index ee56036..cf76088 100644
 +     */
 +    public function finishRegistration(Request $request)
 +    {
-+        // stored in the session in FacebookAuthenticator
 +        /** @var FacebookUser $facebookUser */
-+        $facebookUser = $request->getSession()->get('facebook_user');
++        $facebookUser = $this->get('app.facebook_authenticator')
++            ->getUserInfoFromSession($request);
 +        if (!$facebookUser) {
 +            throw $this->createNotFoundException('How did you get here without user information!?');
 +        }
@@ -122,88 +122,35 @@ index 0000000..b3da268
 +        return 'app_bundle_user_registration_type';
 +    }
 +}
-diff --git a/src/AppBundle/OAuth/FinishRegistrationException.php b/src/AppBundle/OAuth/FinishRegistrationException.php
-new file mode 100644
-index 0000000..a806256
---- /dev/null
-+++ b/src/AppBundle/OAuth/FinishRegistrationException.php
-@@ -0,0 +1,41 @@
-+<?php
-+
-+namespace AppBundle\OAuth;
-+
-+use Exception;
-+use Symfony\Component\Security\Core\Exception\AuthenticationException;
-+
-+class FinishRegistrationException extends AuthenticationException
-+{
-+    private $userInformation;
-+
-+    /**
-+     * @param mixed         $userInfo Any info to be used to help registration
-+     * @param string        $message
-+     * @param integer       $code
-+     * @param \Exception    $previous
-+     */
-+    public function __construct($userInfo, $message = "", $code = 0, Exception $previous = null)
-+    {
-+        $this->userInformation = $userInfo;
-+
-+        parent::__construct($message, $code, $previous);
-+    }
-+
-+    public function getUserInformation()
-+    {
-+        return $this->userInformation;
-+    }
-+
-+    /**
-+     * This method should *not* be called normally. The purpose
-+     * of this exception is to be a "flag" for code that will
-+     * redirect the user to some "finish registration" page. If
-+     * this message is shown to your user, then you're missing
-+     * this piece of your code.
-+     */
-+    public function getMessageKey()
-+    {
-+        return 'You need to finish registration to login.';
-+    }
-+}
 diff --git a/src/AppBundle/Security/FacebookAuthenticator.php b/src/AppBundle/Security/FacebookAuthenticator.php
-index 3472d80..aff9dc9 100644
+index 214481b..decf07a 100644
 --- a/src/AppBundle/Security/FacebookAuthenticator.php
 +++ b/src/AppBundle/Security/FacebookAuthenticator.php
-@@ -3,18 +3,18 @@
+@@ -3,12 +3,15 @@
  namespace AppBundle\Security;
  
  use AppBundle\Entity\User;
-+use AppBundle\OAuth\FinishRegistrationException;
-+use AppBundle\Security\Helper\FinishRegistrationBehavior;
- use AppBundle\Security\Helper\SaveAuthFailureMessage;
--use AppBundle\Security\Helper\RedirectToLoginWhenAnonymous;
- use AppBundle\Security\Helper\PreviousUrlHelper;
++use KnpU\OAuth2ClientBundle\Security\Exception\FinishRegistrationException;
++use KnpU\OAuth2ClientBundle\Security\Helper\FinishRegistrationBehavior;
  use Doctrine\ORM\EntityManager;
- use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+ use KnpU\OAuth2ClientBundle\Security\Helper\PreviousUrlHelper;
+ use KnpU\OAuth2ClientBundle\Security\Helper\SaveAuthFailureMessage;
  use League\OAuth2\Client\Token\AccessToken;
+ use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
  use League\OAuth2\Client\Provider\Facebook;
- use League\OAuth2\Client\Provider\FacebookUser;
--use Symfony\Component\HttpFoundation\RedirectResponse;
--use Symfony\Component\HttpFoundation\Response;
++use League\OAuth2\Client\Provider\FacebookUser;
+ use Symfony\Component\HttpFoundation\RedirectResponse;
  use Symfony\Component\Routing\RouterInterface;
- use Symfony\Component\HttpFoundation\Request;
-+use Symfony\Component\HttpFoundation\RedirectResponse;
- use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
- use Symfony\Component\Security\Core\Exception\AuthenticationException;
- 
-@@ -22,6 +22,7 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
+ use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
+@@ -23,6 +26,7 @@ class FacebookAuthenticator extends SocialAuthenticator
  {
      use PreviousUrlHelper;
      use SaveAuthFailureMessage;
 +    use FinishRegistrationBehavior;
  
-     private $facebook;
-     private $em;
-@@ -61,15 +62,10 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
+     /**
+      * @var Facebook
+@@ -78,15 +82,10 @@ class FacebookAuthenticator extends SocialAuthenticator
          $user = $this->em->getRepository('AppBundle:User')
                      ->findOneBy(array('email' => $email));
  
@@ -222,64 +169,17 @@ index 3472d80..aff9dc9 100644
          }
  
          // make sure the Facebook user is set
-@@ -96,6 +92,12 @@ class FacebookAuthenticator extends AbstractSocialAuthenticator
+@@ -106,6 +105,13 @@ class FacebookAuthenticator extends SocialAuthenticator
  
      public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
      {
-+        if ($this->requiresFinishRegistration($exception)) {
-+            $registrationUrl = $this->router->generate('connect_facebook_registration');
++        if ($exception instanceof FinishRegistrationException) {
++            $this->saveUserInfoToSession($request, $exception);
 +
-+            return $this->sendToFinishRegistration($registrationUrl, $request, $exception);
++            $registrationUrl = $this->router->generate('connect_facebook_registration');
++            return new RedirectResponse($registrationUrl);
 +        }
 +
          $this->saveAuthenticationErrorToSession($request, $exception);
  
          $loginUrl = $this->router->generate('security_login');
-diff --git a/src/AppBundle/Security/Helper/FinishRegistrationBehavior.php b/src/AppBundle/Security/Helper/FinishRegistrationBehavior.php
-new file mode 100644
-index 0000000..3d233c1
---- /dev/null
-+++ b/src/AppBundle/Security/Helper/FinishRegistrationBehavior.php
-@@ -0,0 +1,42 @@
-+<?php
-+
-+namespace AppBundle\Security\Helper;
-+
-+use AppBundle\OAuth\FinishRegistrationException;
-+use Symfony\Component\HttpFoundation\RedirectResponse;
-+use Symfony\Component\HttpFoundation\Request;
-+use Symfony\Component\Security\Core\Exception\AuthenticationException;
-+
-+/**
-+ * Use this trait if sometimes your authenticator requires people
-+ * to "finish registration" before logging in.
-+ */
-+trait FinishRegistrationBehavior
-+{
-+    /**
-+     * Should we send the user to finish registration?
-+     *
-+     * @param AuthenticationException $e
-+     * @return bool
-+     */
-+    protected function requiresFinishRegistration(AuthenticationException $e)
-+    {
-+        return $e instanceof FinishRegistrationException;
-+    }
-+
-+    /**
-+     * Call this from within your onAuthenticationFailure() method.
-+     *
-+     * @param string $registrationUrl
-+     * @param Request $request
-+     * @param FinishRegistrationException $e
-+     * @return RedirectResponse
-+     */
-+    protected function sendToFinishRegistration($registrationUrl, Request $request, FinishRegistrationException $e)
-+    {
-+        // save the user information!
-+        $request->getSession()->set('guard.finish_registration.user_information', $e->getUserInformation());
-+
-+        return new RedirectResponse($registrationUrl);
-+    }
-+}
