@@ -17,3 +17,5 @@ parameters:
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
+    facebook_app_id:  XXXX
+    facebook_app_secret: XXXX

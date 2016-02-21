@@ -23,5 +23,6 @@ security:
                 authenticators:
                     - app.form_login_authenticator
                     - app.api_token_authenticator
+                    - app.facebook_authenticator
                 # by default, use the start() function from FormLoginAuthenticator
                 entry_point: app.form_login_authenticator

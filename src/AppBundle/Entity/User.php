@@ -56,6 +56,11 @@ class User implements UserInterface
      */
     private $lastLoginTime;
 
+    /**
+     * @ORM\Column(type="string", length=50, nullable=true)
+     */
+    private $facebookId;
+
     public function __construct()
     {
         $this->apiToken = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
@@ -145,5 +150,15 @@ class User implements UserInterface
     public function setLastLoginTime(\DateTime $lastLoginTime)
     {
         $this->lastLoginTime = $lastLoginTime;
+    }
+
+    public function getFacebookId()
+    {
+        return $this->facebookId;
+    }
+
+    public function setFacebookId($facebookId)
+    {
+        $this->facebookId = $facebookId;
     }
 }
