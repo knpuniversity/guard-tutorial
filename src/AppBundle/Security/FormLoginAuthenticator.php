@@ -4,9 +4,11 @@ namespace AppBundle\Security;
 
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -65,6 +67,21 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
         }
 
         return true;
+    }
+
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    {
+        // AJAX! Maybe return some JSON
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse(
+                // you could translate the message
+                array('message' => $exception->getMessageKey()),
+                403
+            );
+        }
+
+        // for non-AJAX requests, return the normal redirect
+        return parent::onAuthenticationFailure($request, $exception);
     }
 
     protected function getLoginUrl()
